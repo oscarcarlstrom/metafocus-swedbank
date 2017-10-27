@@ -39,6 +39,8 @@ $(document).ready(function() {
 	initFileDownloads();
 
 	setAriaAttributesForDeleteButtons();
+	
+	alert("GIT test");
 });
 
 function browserIsIEOnWindowsPhone() {
