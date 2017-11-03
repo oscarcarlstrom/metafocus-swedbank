@@ -39,8 +39,6 @@ $(document).ready(function() {
 	initFileDownloads();
 
 	setAriaAttributesForDeleteButtons();
-	
-	alert("GIT test");
 });
 
 function browserIsIEOnWindowsPhone() {
@@ -894,9 +892,27 @@ function setAriaAttributesForFileDownloadButtons() {
 	});
 }
 
+function adjustErrorMessagesForFileUpload() {
+	var $errorMsgContainer = $("label[for='vedlegg-btn']").parent().siblings("div:first");
+	if($errorMsgContainer.length) {
+		$errorMsgContainer.css("margin-top", "5px");
+		var $errorMsgText = $errorMsgContainer.find("span.digiforms_validation_message");
+		var allowedValues = $errorMsgText.substring($errorMsgText.indexOf("["), $errorMsgText.indexOf("]"));
+		if($errorMsgText.text().indexOf("File type") >= 0) {
+			$errorMsgText.text("Beklager, filtypen er ikke støttet! Tillatte filformater er: " + allowedValues);
+		}
+		else {
+			$errorMsgText.text("Beklager, filen er for stor! Den kan ikke være større enn " + allowedValues);
+		}
+		console.log("Beklager, filen er for stor! Den kan ikke være større enn " + allowedValues); //Todo
+		console.log("Beklager, filtypen er ikke støttet! Tillatte filformater er: " + allowedValues); //Todo
+	}
+}
+
 function initFileDownloads() {
 	initFileDownloadLinks();
-	setAriaAttributesForFileDownloadButtons();	
+	setAriaAttributesForFileDownloadButtons();
+	adjustErrorMessagesForFileUpload();
 }
 
 function setAriaAttributesForDeleteButtons() {
