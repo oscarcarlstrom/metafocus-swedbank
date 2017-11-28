@@ -1,6 +1,8 @@
 var ctrlDown;
 
 $(document).ready(function() {
+	console.log("Hei");
+	
 	//Used to check if control is pressed
 	initCtrlEventListener();
 	
