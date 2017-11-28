@@ -1,0 +1,1149 @@
+body {
+    font-family: Swedbank Sans Regular, Arial, sans-serif !important;
+    padding: 13px;
+    margin: 0 !important; /*Digiforms override*/
+    height: auto !important; /*Digiforms override*/
+    color: #512b2b;
+}
+
+/************* Breaks ***************/
+hr {
+    border: none;
+    background-color: #862525;
+    opacity: 0.3;
+    height: 1px;
+    margin: 34px 0 55px 0;
+}
+
+/********** Small grids **********/
+.row-xs {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+
+    /* iOS 6, Safari 3.1-6 */
+    -webkit-display: -webkit-flex; 
+    -webkit-flex-direction: row;
+    -webkit-justify-content: space-between;      
+
+}
+
+.row-xs.row-align-bottom {
+    align-items: flex-end;
+    /* iOS 6, Safari 3.1-6 */
+    -webkit-align-items: flex-end;  
+}
+.row-xs.row-align-top {
+    align-items: flex-start;
+    /* iOS 6, Safari 3.1-6 */
+    -webkit-align-items: flex-start;  
+}
+.row-xs.row-align-center {
+    align-items: center;
+    /* iOS 6, Safari 3.1-6 */
+    -webkit-align-items: center;  
+}
+.row-xs.row-align-stretch {
+    align-items: stretch;
+    /* iOS 6, Safari 3.1-6 */
+    -webkit-align-items: stretch;  
+}
+
+.col-right-align {
+    text-align: right;
+}
+
+.row-xs .col-50 {
+    width: 45% !important;
+}
+.row-xs .col-50 {
+    width: 45% !important;
+}
+
+.row-xs .col-60 {
+    width: 55% !important;
+}
+.row-xs .col-40 {
+    width: 35% !important;
+}
+
+.row-xs .col-80 {
+    width: 78% !important;
+}
+.row-xs .col-20 {
+    width: 18% !important;
+}
+
+.row > div:not(.col-no-margin), .row-sm > div:not(.col-no-margin) {
+    margin-top: 21px;
+}
+
+/********** Responsive tables **********/
+table.table-responsive {
+    border-collapse: collapse;
+}
+
+table.table-responsive tr {
+    font-family: inherit !important;
+    color: inherit !important;
+}
+
+table.table-responsive th {
+    padding: 13px 13px 0 0;
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+    text-align: left !important;
+    color: inherit !important;
+    font-weight: normal !important;
+    display: block;
+}
+
+table.table-responsive td {
+    padding: 0 13px 21px 0;
+    font-family: inherit !important;
+    text-align: left !important;
+    color: inherit !important;
+    display: block;
+}
+
+/********** Containers and content **********/
+.container {
+    width: 100%;
+    max-width: 60em;
+    margin: auto;
+}
+
+.content {
+    max-width: 30em;
+}
+
+.sub-section, .control-sub-section {
+    margin-top: 55px !important;
+}
+
+.input-panel > div:not(.row) {
+    margin-top: 21px !important;
+}
+
+/********** Positioning **********/
+.pull-right {
+    float: right;
+}
+
+/********** Hiding **********/
+.hidden {
+	display: none !important;
+}
+
+.hidden-positon {
+    position: absolute !important;
+    left: -9999px;
+    top: -9999px;
+}
+
+/********** Texts **********/
+.text-center {
+    text-align: center !important;
+}
+
+/********** Skip link **********/
+.skip-navigation a {
+	position: absolute;
+  	left: -9999px;
+  	font-size: 1.2em;
+  	font-family: inherit;
+}
+
+.skip-navigation a:focus {
+	position: relative;
+  	left: auto;
+  	font-family: inherit;
+}
+
+/********** Nav **********/
+nav li {
+    position: relative;
+}
+
+nav li button {
+    padding: 8px 13px !important;
+    text-decoration: none !important;
+    font-family: Swedbank Headline Bold, Arial, sans-serif !important;
+    font-size: 2em;
+    border: solid 2px transparent;
+    background: transparent;
+}
+
+nav li.current button {
+    color: #512b2b !important;
+}
+
+nav li:not(.current) button {
+    color: rgba(81, 43, 43, 0.65);
+}
+nav li:not(.current) button:hover {
+    background-color: #fbf2ea !important;
+    -webkit-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+nav li.current button:before {
+    content: "";
+    position: absolute;
+    background-color: #f2520d;
+    height: 0.2em;
+    width: 100%;
+    left: 0;
+    top: 90%;
+}
+
+/************* Next previous navigation ***************/
+.next-prev-nav {
+	padding-bottom: 89px;
+    padding-top: 55px;
+}
+
+/************* Links ***************/
+a {
+    display: inline-flex;
+    border: solid 2px transparent;
+    vertical-align: middle;
+}
+
+/************* Links and buttons ***************/
+a:focus, button:not(.btn-delete):focus {
+    outline: none !important;
+    border: solid 2px #f35b1c !important;
+}
+
+button.btn-delete:focus {
+    outline: none !important;
+    border: solid 2px #fdc129 !important; /*OR: #5b8ad6 ?*/
+}
+
+/********** Buttons **********/
+button:not([disabled="disabled"]), label.btn {
+    cursor: pointer !important;
+}
+
+button, label.btn {
+    text-align: center;
+	border: solid 2px transparent;
+	/*Prevent user from accidentally selecting the text*/
+    -moz-user-select: none;
+    khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.btn {
+    border-radius: 4px;
+    padding: 15px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+    font-size: 1.3em;
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+}
+
+.btn:disabled {
+	opacity: 0.4 !important;
+	cursor: not-allowed !important;
+}
+
+button.btn-wide-100 {
+	width: 100% !important;
+}
+
+label.btn-wide-100, a.btn-wide-100 {
+	width: calc(100% - 30px) !important;
+	display: block;
+	margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-wide-90 {
+	width: calc(90% - 30px) !important;
+}
+
+.btn-wide-80 {
+	width: calc(80% - 30px) !important;
+}
+
+.btn-wide-70 {
+	width: calc(70% - 30px) !important;
+}
+
+button.btn-high-100 {
+    height: 100% !important;
+}
+
+label.btn-high-100 {
+    height: calc(100% - 30px) !important;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn.btn-primary {
+    background-color: #257886;
+    color: white;
+}
+
+.btn.btn-default {
+    background-color: #ebe7e2;
+    color: #512b2b;
+}
+
+button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
+	box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn.btn-lg {
+    height: 8em;
+    width: 8em;
+    padding-top: 3.5em;
+    font-size: 100%;
+}
+
+.btn.btn-round {
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-size: 45%;
+    background-position: center 35%;
+}
+
+.btn-fixed-md {
+	width: 100%;
+    margin-bottom: 13px;
+}
+
+/*These buttons don't display any text (icons only)*/
+.btn.btn-sm {
+	height: 2em;
+	width: 2em;
+	padding: 0.5em;
+}
+
+.btn.btn-help {
+    position: absolute;
+    right: 0;
+    background-image: url(../graphics/icon-question-mark2.svg);
+    background-repeat: no-repeat;
+    background-position-y: 45% !important;
+    background-position-x: 50% !important;
+    background-size: 55% !important;
+}
+
+.btn.btn-help.active {
+    background-image: url(../graphics/icon-x.svg) !important;
+}
+
+.btn-delete-sm-container {
+	height: 2em;
+	padding: 1em 0;
+}
+
+.btn.btn-delete.btn-sm {
+	background-size: 55%;
+	background-position-x: 50% !important;
+}
+
+.btn.btn-delete {
+    background-color: #cc3c00;
+    color: white;
+    background-image: url(../graphics/trash-can2.svg);
+    background-repeat: no-repeat;
+    background-position-y: 45%;
+    background-position-x: calc(50% - 4em);
+    background-size: 1em;
+}
+
+.btn.add-content > .symbol {
+    vertical-align: middle;
+    font-size: 1.2em;
+}
+
+.btn-edit {
+    background-image: url(../graphics/edit-icon.svg);
+    background-repeat: no-repeat;
+    background-position-y: 45%;
+    background-position-x: calc(50% - 2.2em);
+    background-size: 1em;
+}
+
+/********** Help buttons **********/
+.help-text-container .label_text {
+    float: left;
+    width: 70% !important;
+    display: block !important;
+    padding-top: 5% !important;
+}
+
+.help-elements {
+    position: relative;
+    padding-bottom: 1.5em;
+}
+
+.help-elements-for-fieldset {
+    padding-bottom: 0.2em !important;
+}
+
+.help-elements-for-fieldset .help-text {
+    margin-bottom: 1.5em; 
+}
+
+.help-text {
+    padding: 3em 8%;
+    background-color: #ebf8f2 !important;
+}
+
+.help-elements:before {
+    content: "";
+    position: absolute;
+    font-size: 1.3em !important;
+    width: calc(2em + 14px);
+    height: calc(2em + 14px);
+    top: -7px;
+    right: -7px;
+    border-radius: 50% 0 50% 50%;
+    background-color: white;
+}
+
+/****container-elements that has focus*****/
+.focused {
+	border-color: #f35b1c !important;
+}
+
+/********** Inputs and selects **********/
+.inputfelt, select {
+    padding: 12px !important;
+    width: 100% !important;
+    border: solid 1px #c3b5a7;
+    font-size: 1.2em !important;
+    font-family: inherit !important;
+    outline: none; /*Chrome override*/
+    border-radius: 2px;
+
+    /*Remove browser default style*/
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.inputfelt:focus, select:focus {
+	padding: 11px !important;
+	border: 2px solid #f35b1c !important;
+}
+
+.inputfelt:disabled, select:disabled {
+    background-color: white;
+    color: transparent !important;
+    border-color: #c3b5a787;
+}
+
+/********** Animation for input that is loading data **********/
+.label_control.loading:before {
+    content: "";
+    position: absolute;
+    height: 1.2em;
+    width: 1.2em;
+    border-radius: 50%;
+    border-top: solid #257886 2px;
+    margin-top: 13px;
+    margin-left: 13px;
+    /*background-color: red;*/
+    animation: spin 1s linear infinite;
+    -moz-animation: spin 1s linear infinite;
+    -webkit-animation: spin 1s linear infinite;
+    -o-animation: spin 1s linear infinite;
+    -ms-animation: spin 1s linear infinite;
+}
+
+select, option {
+	 font-family: inherit !important;
+}
+
+.select-container {
+	position: relative;
+}
+
+.select-container .label_control::after {
+	content: "";
+	display: block;
+	width: .7em;
+	height: 0.7em;
+	border: solid #512b2b;
+	border-width: 0 0.1em 0.1em 0;
+	transform: rotate(45deg);
+	-moz-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+	position: absolute;
+	right: 24px;
+	bottom: calc(12px + 0.6em);
+}
+
+select {
+	cursor: pointer;
+    text-indent: 1px;
+    text-overflow: '';
+    background-color: white !important;
+}
+
+/*Remove browser default arrow in IE*/
+select::-ms-expand {
+    display: none;
+}
+
+/********** Attachments **********/
+.attachment label.btn-primary {
+    margin-top: 21px;
+}
+
+.attachment > div {
+    font-size: inherit !important;
+}
+
+.attachment input[type="file"], .attachment #button_upload_updatexml {
+    position: absolute !important;
+    left: -999999999px !important;
+}
+
+.attachment .file-errors {
+    margin-top: 5px !important;
+}
+
+/********** Checkboxes and radio-buttons **********/
+.control-sub-section > fieldset > legend {
+	margin-bottom: 21px !important;
+}
+
+.control-container {
+	font-family: inherit;
+}
+
+.control-container-tight > fieldset {
+    width: calc(100% - 3em) !important; 
+}
+
+.control-container-tight .control .label_text {
+    width: 2em !important; 
+}
+
+.control input[type="checkbox"], .control input[type="radio"] {
+  cursor: pointer !important;
+  position: absolute;
+  left: -9999px;
+}
+
+.control {
+	position: relative;
+	padding-top: 12px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	border: solid 2px transparent;
+}
+
+.control .label_control {
+	vertical-align: top !important;
+}
+
+/*control text - digiforms*/
+.control .label_text {
+    width: 80% !important;
+    cursor: pointer !important;
+    margin-left: 1.5em;
+    margin-bottom: 1.2em;
+    
+    /*Prevent user from accidentally selecting the text*/
+    -moz-user-select: none;
+    khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    font-family: inherit !important;
+}
+
+.control .label_text label {
+    cursor: pointer !important;
+    font-family: inherit !important;
+}
+
+/*Checkboxes and radio-buttons*/
+.control .label_text label::before {
+    width: 22px;
+    height: 22px;
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    border: solid #ab9f94 1px;
+    border-radius: 2px;
+}
+
+/*Checkbox/Radio checked*/
+.control .label_text.checked label::before {
+	border-color: #257886 !important;
+	background-color: #257886 !important;
+}
+
+.control .label_text.checked label::after {
+	content: "";
+	position: absolute;
+}
+
+/*Checkbox checked*/
+.checkbox .label_text.checked label::after {
+    width: 4px;
+    height: 12px;
+    border-style: solid;
+    border-width: 0 5px 5px 0;
+    transform: rotate(45deg);
+    -moz-transform: rotate(45deg) translate3d( 0, 0, 1px); /*Firefox boxing border*/
+	-webkit-transform: rotate(45deg) translate3d( 0, 0, 1px); /*Firefox boxing border*/
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+    left: 19.5px;
+    top: 13px;
+    /*border-color: #257886 !important;*/
+    border-color: white !important;
+}
+
+/*Radio*/
+.radio .label_text label::before {
+	border-radius: 50%;
+}
+
+/*Radio checked*/
+.radio .label_text.checked label:after {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    left: 18px;
+    top: 18px;
+    border: none;
+    background-color: white;/*#257886;*/ /*#512b2b;*/
+}
+
+.specify {
+	margin-left: 12px;
+	font-family: inherit !important;
+}
+
+.specify > div > label {
+	font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+}
+
+.specify textarea {
+	font-family: inherit !important;	
+	max-width: calc(100% - 24px) !important
+}
+
+/********** Accordions **********/
+.accordion-container {
+    margin-bottom: 13px;
+    background-color: #fbf2ea; /*#ebe7e2;*/
+    position: relative;
+    /* border: solid #512b2b 1px; */
+    font-family: inherit !important;
+    border-radius: 2px;
+    word-wrap: break-word;
+}
+
+/*To prevent text from overflowing*/
+.accordion-container table { 
+    table-layout: fixed; /*otherwise "word-wrap: break-word;" will have no effect on the table*/
+}
+/*To prevent text from overflowing*/
+.accordion-container a {
+    word-break: break-word;
+}
+
+.accordion-container-info {
+	background-color: #e9f7fb !important;
+}
+
+.accordion-container-success {
+	background-color: #ebf8f2 !important;
+}
+
+button.accordion {
+	border-radius: 2px;
+	background-color: transparent;
+	cursor: pointer;
+	padding: 30px;
+	width: 100%;
+	text-align: left !important;
+	font-size: 165%;
+	font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+	transition: 0.4s;
+	color: #512b2b;
+}
+
+button.accordion span.chev {
+    height: 0.5em;
+    width: 0.5em;
+    position: relative;
+    float: left;
+    font-family: inherit !important;
+}
+
+button.accordion span.chev::before {
+    border-color: #512b2b;
+    border-style: solid;
+    border-width: 0.1em 0.1em 0 0;
+    height: 0.5em;
+    width: 0.5em;
+    display: inline-block;
+    transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	-o-transform: rotate(45deg);
+    position: absolute;
+    content: "";
+    top: 0.35em;
+}
+
+button.accordion.active span.chev::before {
+	transform: rotate(135deg);
+	-moz-transform: rotate(135deg);
+	-webkit-transform: rotate(135deg);
+	-ms-transform: rotate(135deg);
+	-o-transform: rotate(135deg);
+}
+
+button.accordion span.desc {
+    display: inline-block;
+    width: calc(94% - 0.5em);
+    float: right;
+}
+
+.accordion-container.small button.accordion {
+	padding: 15px !important;
+	width: 100% !important;
+	font-size: 100% !important;
+	background-color: transparent !important;
+}
+
+/********** Panels **********/
+.panel {
+	/*padding: 13px;*/
+    padding: 5% 5% calc(2em + 5%) 5%;
+    border-radius: 2px;
+    margin-bottom: 21px;
+}
+
+.panel.panel-danger {
+    background-color: #ffeded !important;
+}
+.panel.panel-danger {
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif;
+}
+.panel.panel-danger h4, .panel.panel-danger p, .panel.panel-danger a {
+    color: #862525 !important;
+}
+
+.panel.panel-info {
+    background-color: #e9f7fb !important;
+}
+.panel.panel-info p {
+	color: #257886;
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif;
+}
+
+.panel.panel-success {
+	background-color: #ebf8f2 !important;
+}
+.panel.panel-success p {
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif;
+}
+
+.accordion-container .panel {
+    padding: 21px 0.8em 21px 0.8em !important;;
+    font-family: inherit !important;
+    border-radius: 0 !important;
+    margin-bottom: auto !important; /*IE*/
+    margin-bottom: initial !important;
+}
+
+.accordion-container .panel .summary-container {
+    padding-bottom: 21px;
+}
+
+.accordion-container .panel input, .accordion-container .panel select {
+	border-color: transparent;
+}
+
+.accordion-container .panel .accordion-container.small {
+	background-color: #ebe7e2;
+	margin-right: 13px;
+	margin-left: 13px;
+}
+
+.accordion-container.small .panel h4 {
+	margin-right: 13px;
+	margin-left: 13px;
+}
+
+.accordion-container.small .panel {
+	background-color: transparent;
+    padding-top: 0 !important;
+}
+
+.accordion-container .panel table {
+	width: 100%;
+	font-family: inherit !important;
+	color: #512b2b !important;
+}
+
+.accordion-container .panel table tr {
+	font-family: inherit !important;
+	color: inherit !important;
+}
+
+.accordion-container .panel table tr.row-group > th {
+	padding-top: 34px;
+}
+
+.accordion-container .panel table th {
+	padding: 13px;
+	font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+	text-align: left !important;
+	color: inherit !important;
+	font-weight: normal !important;
+	display: block;
+}
+
+.accordion-container .panel table td {
+	padding: 0 13px 21px 13px;
+	font-family: inherit !important;
+	font-size: 1.3em;
+	color: inherit !important;
+	display: block;
+}
+
+.accordion-container .panel .list-container, .text-container {
+	padding: 13px;
+	font-family: Swedbank Sans Regular, Arial, sans-serif !important;
+}
+
+.accordion-container.small .panel .list-container {
+	font-size: 1.2em;
+	padding-bottom: 21px;
+}
+
+.list-container > p {
+	font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+}
+
+.list-container > ul {
+	list-style: none;
+	position: relative;
+	font-family: inherit !important;
+    padding-left: 2em;
+}
+
+.list-container > ul > li {
+	font-family: inherit !important;
+	margin-bottom: 0.5em;
+}
+
+.accordion-container.not(.small) .panel .list-container > ul > li {
+	font-size: 1.3em;
+}
+
+.list-container > ul > li::before {
+    position: absolute;
+    left: 1em;
+    margin-top: 0.2em;
+    content: "";
+    border-bottom-right-radius: .8em;
+    border-top-right-radius: 0.8em;
+    height: 0.8em;
+    width: 0.4em;
+    background-color: #512b2b;
+    display: inline-block;
+}
+
+
+.accordion-container .panel .form-group {
+    padding: 0 5% 89px !important;
+}
+
+.accordion-container .panel .btn-edit {
+    display: block;
+    margin: auto auto 21px auto;
+}
+
+/************* Stars that indicate mandatory input ***************/
+.label_text label span, .mandatory > fieldset > legend > span.asterix {
+    color: #d6480c;
+    font-size: 1.5em;
+}
+
+/************* Mark that indicates success ***************/
+span.success-mark {
+    height: 0.8em;
+    width: 0.8em;
+    display: inline-block;
+    vertical-align: baseline;
+    background-color: #257886;
+    margin-right: 0.25em;
+    border-radius: 50%;
+}
+
+span.success-mark:before {
+    content: "";
+    position: absolute;
+    height: 0.3em;
+    width: 0.1em;
+    border: solid white;
+    border-width: 0 0.1em 0.1em 0;
+    transform: rotate(45deg);
+    -moz-transform: rotate(45deg) translate3d( 0, 0, 1px);
+    -webkit-transform: rotate(45deg) translate3d( 0, 0, 1px);
+    -ms-transform: rotate(45deg);
+    margin-left: 0.3em;
+    margin-top: 0.15em;
+}
+
+/************* Digiforms overrides ***************/
+form {
+    height: auto !important;
+}
+
+#digiforms-page-regions {
+    height: auto !important;
+}
+
+/************* Digiforms overrides - validation ***************/
+.digiforms_validation_message {
+    color: #c5440d;
+    font-family: Swedbank Sans Extra Bold, Swedbank Sans Bold, Swedbank Sans Medium, Arial, sans-serif;
+    background-image: none;
+    padding-left: 0;
+    font-size: 1em;
+}
+
+.digiforms_validation_message::before {
+    content: url(../graphics/icon-exclamation-mark.svg);
+    padding: 0.4em;
+    display: inline-block;
+    background-color: #c5440d;
+    border-radius: 50%;
+    margin-right: 0.3em;
+    margin-bottom: 0.3em;
+    width: 1em;
+    height: 1em;
+    line-height: 0;
+    font-size: 0.9em;
+}
+
+/************* Digiforms overrides - page loading ***************/
+#digiforms_progress {
+    background-image: none !important;
+    border: 16px solid #ebf8f2; /* Light Turquoise */
+    border-top: 16px solid #257886; /*Turquoise*/
+    border-radius: 50%;
+    width: 100px; 
+    height: 100px; 
+    position: fixed;
+    right: 0;
+    left: 0;
+    margin-right: auto;
+    margin-left: auto; 
+    top: calc((100vh/2)*0.8);
+    animation: spin 2s linear infinite;
+    -moz-animation: spin 2s linear infinite;
+    -webkit-animation: spin 2s linear infinite;
+    -o-animation: spin 2s linear infinite;
+    -ms-animation: spin 2s linear infinite;
+
+    box-shadow: 0px 0px 8px #216b78;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); -moz-transform: rotate(0deg); -webkit-transform: rotate(0deg); -o-transform: rotate(0deg); -ms-transform: rotate(0deg); }
+    100% { transform: rotate(360deg); -moz-transform: rotate(360deg); -webkit-transform: rotate(360deg); -o-transform: rotate(360deg); -ms-transform: rotate(360deg); }
+}
+
+@media only screen and (min-width: 310px) {   
+    /********** Small grids **********/
+    .row-sm .col-50 {
+        width: 45% !important;
+    }
+    .row-sm .col-50 {
+        width: 45% !important;
+    }
+    .row-sm {
+        display: flex;
+        flex-flow: row;
+        justify-content: space-between;
+
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-display: -webkit-flex; 
+        -webkit-flex-direction: row;
+        -webkit-justify-content: space-between;      
+    }
+    .row-sm.row-align-bottom {
+        align-items: flex-end;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: flex-end;  
+    }
+    .row-sm.row-align-top {
+        align-items: flex-start;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: flex-start;  
+    }
+    .row-sm.row-align-center {
+        align-items: center;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: center;  
+    }
+    .row-sm.row-align-stretch {
+        align-items: stretch;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: stretch;  
+    }
+
+    .row-sm > div:not(.col-no-margin) {
+        margin-top: auto; /*IE*/
+        margin-top: initial;
+    }
+
+    /********** Responsive tables **********/
+    table.table-responsive tr > th, td {
+        width: auto;
+        display: table-cell;
+    }
+
+    table.table-responsive tr > td {
+        padding: 13px 0 13px 0;
+        font-size: 1em;
+    }
+
+    table.table-responsive tr > th {
+        padding: 13px 13px 13px 0;
+    }
+
+    /********** Buttons **********/
+    .btn-fixed-md {
+        width: 6.7em;
+    }
+}
+
+@media screen and (min-width: 400px) {
+    /********** Buttons **********/
+	.btn.btn-lg {
+    	font-size: 1.3em;
+    	font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+	}
+}
+
+@media screen and (min-width: 455px) {
+    /********** Grids **********/
+    .row {
+        display: flex;
+        flex-flow: row;
+        justify-content: space-between;
+
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-display: -webkit-flex; 
+        -webkit-flex-direction: row;
+        -webkit-justify-content: space-between;      
+
+    }
+    .row.row-align-bottom {
+        align-items: flex-end;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: flex-end;  
+    }
+    .row.row-align-top {
+        align-items: flex-start;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: flex-start;  
+    }
+    .row.row-align-center {
+        align-items: center;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: center;  
+    }
+    .row.row-align-stretch {
+        align-items: stretch;
+        /* iOS 6, Safari 3.1-6 */
+        -webkit-align-items: stretch;  
+    }
+
+    .row .col-50 {
+        width: 45% !important;
+    }
+    .row .col-50 {
+        width: 45% !important;
+    }
+
+    .row .col-40 {
+        width: 35% !important;
+    }   
+    .row .col-60 {
+        width: 55% !important;
+    }
+
+    .row .col-20 {
+        width: 18% !important;
+    }   
+    .row .col-80 {
+        width: 78% !important;
+    }  
+
+    /********** Accordions **********/
+	.accordion-container .panel .form-group {
+		padding-left: 8% !important;
+		padding-right: 8% !important;
+	}
+	
+    /********** Buttons **********/
+	.btn.btn-delete {
+		background-position-x: 50%;
+		background-size: 33%;
+	}
+
+	.btn.btn-delete .desc {
+		display: none;
+	}
+}
+
+@media screen and (min-width: 520px) {
+    /********** Nav **********/
+    nav {
+        max-width: 45em;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 55px;
+        margin-top: 34px;
+    }
+
+    nav li button {
+        font-size: 220% !important;
+        padding: 13px 21px !important;
+    }
+
+    /********** Containers and content **********/
+    .content {
+        margin: auto;
+    }
+
+    /********** Buttons **********/
+	.btn.btn-round {
+	    background-position-y: 40%;
+	}
+
+	.btn.btn-lg {
+		height: 10em;
+    	width: 10em;
+    	padding-top: 4.5em;
+	}
+}

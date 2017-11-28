@@ -1,0 +1,52 @@
+/*Fonts*/
+
+@font-face{ 
+	font-family:"Swedbank Sans Extra Bold";
+	src: /*local("Swedbank Sans Bold"),*/
+	url("../fonts/SwedbankSans-ExtraBold.ttf") format("truetype");
+}
+
+@font-face{ 
+	font-family:"Swedbank Sans Bold";
+	src: /*local("Swedbank Sans Bold"),*/
+	url("../fonts/SwedbankSans-Bold.ttf") format("truetype");
+}
+
+@font-face{ 
+	font-family:"Swedbank Sans Medium";
+	src: url("../fonts/swedbanksans-medium.eot");
+	src: /*local("Swedbank Sans Medium"),*/
+	url("../fonts/swedbanksans-medium.eot?#iefix") format("embedded-opentype"),
+	url("../fonts/SwedbankSans-Medium.ttf") format("truetype"),
+	url("../fonts/SwedbankSans-Medium.woff") format("woff");
+}
+
+@font-face{ 
+	font-family:"Swedbank Sans Regular";
+	src: url("../fonts/swedbanksans-regular.eot");
+	src: /*local("Swedbank Sans Regular"),*/
+	url("../fonts/swedbanksans-regular.eot?#iefix") format("embedded-opentype"),
+	url("../fonts/SwedbankSans-Regular.ttf") format("truetype"),
+	url("../fonts/SwedbankSans-Regular.woff") format("woff");
+
+}
+
+@font-face{ 
+	font-family:"Swedbank Headline Bold";
+	src: url("../fonts/SwedbankHeadline-Bold.eot");
+	src: /*local("Swedbank Headline Bold"),*/
+	url("../fonts/SwedbankHeadline-Bold.eot?#iefix") format("embedded-opentype"),
+	url("../fonts/SwedbankHeadline-Bold.ttf") format("truetype"),
+	url("../fonts/SwedbankHeadline-Bold.woff") format("woff"),
+	url("../fonts/SwedbankHeadline-Bold.woff2") format("woff2");
+}
+
+@font-face{ 
+	font-family:"Swedbank HeadlineBlack";
+	src: url("../fonts/SwedbankHeadline-Black.eot");
+	src: /*local("Swedbank Headline Black"),*/
+	url("../fonts/SwedbankHeadline-Black.eot?#iefix") format("embedded-opentype"),
+	url("../fonts/SwedbankHeadline-Black.ttf") format("truetype"),
+	url("../fonts/SwedbankHeadline-Black.woff") format("woff"),
+	url("../fonts/SwedbankHeadline-Black.woff2") format("woff2");
+}	

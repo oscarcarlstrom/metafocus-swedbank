@@ -1,0 +1,176 @@
+/************* Header ***************/
+#header-container {
+	padding: 13px 0 13px 0;
+}
+
+#header-container figure {
+    margin: 0;
+    height: 2em;
+    text-align: center;
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#header-container figure > img {
+	height: 100%;
+}
+
+#header-container figure > figcaption {
+	position: absolute;
+	left: -9999px;
+}
+
+/************* Logo ***************/
+#logo-link {
+    background-image: url(../graphics/logo-cropped2.svg);
+    height: 38px;
+    width: 155px;
+    max-width: 100%;
+    background-repeat: no-repeat;
+}
+
+/************* Links ***************/
+a {
+	color: #257886;
+	font-family: Swedbank Sans Bold, Swedbank Sans Regular, Arial, sans-serif !important;
+}
+
+/************* Headings and legends ***************/
+h1 {
+	font-family: Swedbank HeadlineBlack, Arial, sans-serif !important;
+	color: #f35b1c;
+}
+
+#heading-container h1 {
+	font-size: 1.7em;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+#main-content_legend, h2, .sub-section > fieldset > legend, .control-sub-section > fieldset > legend, h3, h4 {
+	font-family: Swedbank Headline Bold, Arial, sans-serif !important;
+	color: #512b2b;
+}
+
+
+#main-content_legend, h2 {
+	padding-top: 30px !important;
+	font-size: 220% !important;
+}
+
+.sub-section > fieldset > legend, .control-sub-section > fieldset > legend, h3 {
+	font-size: 170%;
+}
+
+.sub-section > fieldset > legend, .control-sub-section > fieldset {
+	padding: 0;
+	margin: 0;
+}
+
+h4 {
+	font-size: 120%;
+}
+
+.control-container > fieldset > legend {
+	font-family: Swedbank Sans Bold, Swedbank Sans Medium, Arial, sans-serif !important;
+	font-weight: normal !important;
+}
+
+/************* Paragraphs and labels ***************/
+#error-container p {
+	font-size: 120%;
+}
+
+.label_text {
+    font-size: 100% !important;
+}
+
+.label_text > label {
+	font-family: Swedbank Sans Medium, Arial, sans-serif !important;
+	font-weight: normal !important;
+	font-size: 1em;
+}
+
+/************* "Velg profil" ***************/
+#velg-profil-content #main-content {
+	margin: auto;
+	max-width: 35em;
+}
+
+#velg-profil_legend {
+    display: block;
+    width: 100%;
+    border-width: 0px;
+    background-color: transparent;
+    text-align: center;
+    font-size: 260%;
+    font-family: Swedbank HeadlineBlack, Arial, sans-serif;
+    color: #f35b1c;
+    font-style: normal;
+    text-decoration: none;
+
+    padding-bottom: 21px;
+}
+
+#velg-profil-page h1 {
+	text-align: center;
+	font-size: 160%;
+}
+
+#btn-privat {
+	background-image: url(../graphics/ikon_privatperson_brown.svg);
+}
+
+#btn-bedrift {
+	background-image: url(../graphics/ikon_bedrift_brown.svg);
+}
+
+@media screen and (min-width: 310px) {
+	/************* "Velg profil" ***************/
+	#velg-profil_legend {
+		padding-top: 21px;
+	}
+}
+
+@media screen and (min-width: 400px) {
+	/************* "Velg profil" ***************/
+	#velg-profil_legend {
+		font-size: 300%;
+		padding-top: 34px;
+	}
+}
+
+@media screen and (min-width: 520px) {
+	/************* Header ***************/
+	#header-container figure {
+		vertical-align: baseline;
+	}	
+
+	#header-container figure > figcaption {
+		position: static;
+		left: auto;
+	}
+
+	#heading-container h1 {
+		text-align: center !important;
+	}
+
+	/************* Headings and legends ***************/
+	h1 {
+		font-size: 350% !important;
+	}
+
+	#main-content_legend, h2 {
+		padding-top: 0 !important;
+	}
+
+	/************* "Velg profil" ***************/
+	#velg-profil_legend {
+		font-size: 248%;
+		padding-bottom: 34px;
+	}
+	#velg-profil_legend, #pep-content {
+		padding-top: 55px;
+	}
+}
