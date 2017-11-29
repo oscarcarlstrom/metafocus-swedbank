@@ -1146,6 +1146,14 @@ function removeWhiteSpaces(str) {
 	return newStr;
 }
 
+//Removes a substring from the given string
+function removeSubstr(str, subStr) {
+    if (str != undefined && str.indexOf(subStr) > -1) {
+        str = removeSubstr(str.replace(subStr, ""), subStr);
+    }
+    return str;
+}
+
 //Validation using the algorithm MOD11
 function validationMOD11(val, weightNumber, ignoreLength) {
 	var number = removeWhiteSpaces(val);
