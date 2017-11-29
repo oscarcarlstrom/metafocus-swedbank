@@ -231,6 +231,7 @@ function initHelptexts() {
 //But is required in this function
 function formatAfterInput(str, maxlength, mask, maskHere, x) {
 	var valTrimmed = removeWhiteSpaces(str);
+	valTrimmed = removeSubstr(valTrimmed, mask);
 	var lastSliceIndex = 0;
 	var newVal = "";
 	for(var i = x; i < valTrimmed.length; i++) { //Make sure to prevent array out of bounds
