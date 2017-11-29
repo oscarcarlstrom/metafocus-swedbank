@@ -311,7 +311,7 @@ function initInputs() {
 
 	//Function used to determine if a user is typing
 	function userIsTyping($element, event) {
-		return !isEditKeyEvent(event) && $element.val().length < parseInt($element.attr("maxlength")) && parseInt($element.prop("selectionStart")) == parseInt($element.prop("selectionEnd"));
+		return !isEditKeyEvent(event) && (!$element.attr("maxlength") || $element.val().length < parseInt($element.attr("maxlength"))) && parseInt($element.prop("selectionStart")) == parseInt($element.prop("selectionEnd"));
 	}
 
 	//Input masking for norwegian account numbers - regular input (keys)
@@ -332,8 +332,8 @@ function initInputs() {
 	$("input.account-mask").on("change paste", function() {
     	var $this = $(this);
     	setTimeout(function () {
-			clearNonNumericInput($this);
-    		$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 4 || i == 6; }, 0));
+				clearNonNumericInput($this);
+	    	$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 4 || i == 6; }, 0));
     	}, 100);
     });
 
@@ -353,8 +353,8 @@ function initInputs() {
 	//Clears non numeric input and formats the number on paste or change
   $("input.vps-account-mask").on("change paste", function() {
   	var $this = $(this);
-  	setTimeout(function () {
-		clearNonNumericInput($this);
+  		setTimeout(function () {
+				clearNonNumericInput($this);
   		$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 5; }, 0));
   	}, 100);
   });
@@ -391,8 +391,8 @@ function initInputs() {
 	//on change or paste
 	$('input[type="tel"]').on("change paste", function() {
     	var $this = $(this);
-    	setTimeout(function () {
-			clearNonNumericInput($this, "+-() ");
+    		setTimeout(function () {
+				clearNonNumericInput($this, "+-() ");
     		var prefix = $this.val().substring(0, getSplitIndexForPhoneNumber($this.val()));
     		$this.val(prefix + formatAfterInput($this.val().substring(getSplitIndexForPhoneNumber($this.val()), $this.val().length), $this.attr("maxlength"), " ", function(i, x) {
     			return i == 3 || i == 5 || (i > 7 && (i + 1) % 3 == 0);
@@ -437,6 +437,44 @@ function initInputs() {
     		$this.val(padBy(3, $this.val(), $this.attr("maxlength")));
     	}, 100);
     });
+
+		//For dates
+		//Sets the following format to the input: {dd.mm.yyyy}
+		//on change or paste
+		$("input.format-date").on("change paste", function() {
+			var $this = $(this);
+			setTimeout(function () {
+					clearNonNumericInput($this);
+					var formattedVal = formatAfterInput($this.val(), parseInt($this.attr("maxlength")), ".", function(i, x) { return i == 2 || i == 4; }, 2);
+					$this.val(formattedVal);
+					}, 100);
+		});
+		//For dates
+		//Clears non numeric unput on key released
+		$("input.format-date").on("keyup", function() {
+				clearNonNumericInput($(this));
+		});
+		//For dates
+		//Prevents non-numeric input and sets the following format: {dd.mm.yyyy}
+		//when a key is pressed (except "edit keys")
+		$("input.format-date").on("keydown", function() {
+				if(!browserIsIEOnWindowsPhone()) {
+						var key = event.keyCode || event.charCode;
+						//Prevent non numeric characters
+						if (userIsTyping($(this), event) && !isNumericKey(key, [32, 190])) { //Don't remove characters: " " and "."
+								event.preventDefault();
+						}
+
+						//Don't mess with value on delete,
+						//backspace, arrows, shift, ctrl, home or end key
+						if (userIsTyping($(this), event) && key != 190) {
+								var thisVal = $(this).val();
+								if (thisVal.length == 2 || thisVal.length == 5) {
+										maskAt(thisVal.length, ".", $(this));
+								}
+						}
+				}
+		});
 
 		//Validates percentage according to min/max attributes.
 		//This one is added here and not in the validation() function
