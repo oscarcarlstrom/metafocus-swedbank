@@ -14,17 +14,14 @@ $(document).ready(function() {
 	//It is however necessary in order to prevent red borders around inputs
 	//(in some browsers, e.g. firefox)
 	preventBrowserFormActions();
-	
+
 	//Events used to check if control or tab is pressed
 	initGlobalKeyEventListener();
-	
+
 	//Form elements
 	formControlEventbinding();
 
-	//Accordions
-	initAccordions();
-
-	//Skip nav 
+	//Skip nav
 	navigateToMainContentEventBinding();
 
 	//Adjustments to the auto generated parts of the DOM
@@ -40,30 +37,34 @@ $(document).ready(function() {
 	scrollToFirstError();
 
 	//Adjust hrefs for file-download links
-	initFileDownloads();
+	initFileUpAndDownloads();
 
 	//Disables add buttons when maxium number of
 	//elements has been added
 	disableAddButtonsWhenMaxIsReached();
-	
+
 	//Sets ARIA attributes for delete buttons
 	setAriaAttributesForDeleteButtons();
-	
+
 	//Bind events / adjust eventhandlers to elements
 	//that triggers ajax update
 	initAJAXUpdateElements();
 });
 
+//Adds the attribute for no validation
 function preventBrowserFormActions() {
 	$("#frm").attr("novalidate", "novalidate");
 }
 
+//Detects if browser is IE on Windows phone
 function browserIsIEOnWindowsPhone() {
 	return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
 }
 
+//Initalizes event listeners
+//for the CTRL and TAB keys
 function initGlobalKeyEventListener() {
-	
+
 	//Checks if the CTRL key is pressed
 	ctrlDown = false;
 
@@ -80,7 +81,7 @@ function initGlobalKeyEventListener() {
 			ctrlDown = false;
 		}
 	});
-	
+
 	//Checks if the TAB key is pressed
 	tabDown = false;
 
@@ -99,7 +100,12 @@ function initGlobalKeyEventListener() {
 	});
 }
 
+//Adds event listneres for checkboxes And
+//radio buttons
 function initCheckBoxesAndRadios() {
+
+	//Event listener added to extend the clickable
+	//area for checkboxes and radio buttons
 	$(".label_text").on("click", function(e) {
 	    if (e.target.localName != "label") {
 	    	var $checkbox = $(this).parent().find("input:checkbox");
@@ -110,6 +116,8 @@ function initCheckBoxesAndRadios() {
 	    }
 	});
 
+	//Toggles class for checked/unchecked
+	//customized checkboxes (styled with pseudo elements)
 	var toggleCheck = function($input) {
 		if ($input.is(":checked")) {
 	        $input.parent().siblings(".label_text").addClass("checked");
@@ -119,37 +127,45 @@ function initCheckBoxesAndRadios() {
 	    }
 	};
 
+	//Toggle class "checked" for customized checkboxes
 	$(".control input:checkbox").on("change", function() {
 		toggleCheck($(this));
 	});
 
-	//To ensure that all pseudo-elements are marked as checked when re-visiting a form
+	//To ensure that all customized checkboxes
+	//are marked as checked when re-visiting a page
 	var $checkboxes = $(".control input:checkbox:checked");
 	$.each($checkboxes, function() {
 		toggleCheck($(this));
 	});
 
+	//Toggle class "checked" for customized radio buttons
 	$(".control input:radio").on("change", function() {
 		var $allRadiosInFieldset = $(this).closest("fieldset").find("input:radio");
 		$.each($allRadiosInFieldset, function() {
 			toggleCheck($(this));
 		});
 	});
+
+	//To ensure that all customized radio buttons
+	//are marked as checked when re-visiting a page
 	var $radios = $("input:radio");
 	$.each($radios, function() {
 	  toggleCheck($(this));
 	});
 
-
-	//Focus (for accessibility)
+	//Focus - adds class (for accessibility)
 	$(".control input").on("focus", function() {
 		$(this).parent().parent().addClass("focused");
 	});
 
+	//Blur - removes class (for accessibility)
 	$(".control input").on("blur", function() {
 		$(this).parent().parent().removeClass("focused");
 	});
 
+	//Removes error message when a radio buttons
+	//or checkbox is selected
 	$(".control input").on("change", function() {
 		if($(this).is(":checked")) {
 			$(this).closest(".control-container").find(".digiforms_validation_message:first").hide();
@@ -157,9 +173,12 @@ function initCheckBoxesAndRadios() {
 	});
 }
 
+//Inits help text Buttons
 function initHelptexts() {
 	//First hide all the help texts
 	var $helpTexts = $(".help-text").hide();
+
+	//Add WAI-ARIA attributes for accessibility
 	$helpTexts.attr("aria-hidden", "true");
 
 	var $helpBtns = $(".btn-help");
@@ -179,30 +198,30 @@ function initHelptexts() {
 			$correspondingDescription = $(this).closest(".help-elements-for-fieldset").parent().find("legend:first");
 			$correspondingDescription.removeClass("control-container-tight");
 		}
-		
+
 		$(this).attr("aria-describedby", $correspondingDescription.attr("id"));
-		
+
 		$(this).attr("aria-controls", $(this).siblings(".help-text:first").attr("id"));
 	});
 
-	//Bind evnts 
+	//Bind evnts that toggles show/hide for the help text
 	$helpBtns.on("click", function() {
 		$(this).toggleClass("active");
-		
+
 		var $helpText = $(this).next(".help-text");
 
 		$helpText.toggle();
-		
+
 		if ($helpText.is(":visible")) {
 			$helpBtns.attr("aria-label", "Lukk hjelpetekst");
 			$helpText.attr("aria-hidden", "false");
 			$helpBtns.attr("aria-expanded", "true");
-		} 
+		}
 		else {
 			$helpBtns.attr("aria-label", "Hva menes med dette?");
 			$helpText.attr("aria-hidden", "true");
 			$helpBtns.attr("aria-expanded", "false");
-		}	
+		}
 	});
 }
 
@@ -233,17 +252,16 @@ function initInputs() {
 	//Bring up the numeric keypad for iOS and Android
 	$("input.numeric-text").attr("pattern", "[0-9]*"); //iOS
 	$("input.numeric-text").attr("inputmode", "numeric"); //Android
-	
+
 	//Checks if keyCode is numeric
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
 	var isNumericKey = function(keyCode, exceptionKeyCodes) {
-		//console.log("keyCode is: " + keyCode + " exceptions are: '" + exceptionKeyCodes + "'" + " keyCode in array: " + $.inArray(keyCode, exceptionKeyCodes));
 		if (browserIsIEOnWindowsPhone() || (keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105) || (exceptionKeyCodes != undefined && $.inArray(keyCode, exceptionKeyCodes) > -1)) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	//Clears all non-numeric input from the input field
 	//Skips characters defined by the string "exceptions"
 	var clearNonNumericInput = function($input, exceptions) {
@@ -259,11 +277,14 @@ function initInputs() {
 			$input.val(newVal);
 		}
 	}
-	
+
+	//To clear non numeric input
+	//when a key is released (incase the user somehow
+	//manged to sneek in a non numeric character)
 	$("input.numeric-text").on("keyup", function() {
 		clearNonNumericInput($(this), " ");
 	});
-	
+
 	//Prevents user from entering non-numeric input
 	$("input.numeric-text").on("keydown", function(event) {
 		var key = event.keyCode || event.charCode;
@@ -293,6 +314,7 @@ function initInputs() {
 	}
 
 	//Input masking for norwegian account numbers - regular input (keys)
+	//when a key is pressed (except "edit keys")
 	$("input.numeric-text.account-mask").on("keydown", function(event) {
 		if(!browserIsIEOnWindowsPhone()) {
 			var mask = " ";
@@ -305,6 +327,7 @@ function initInputs() {
 	    	}
     	}
 	});
+	//Clears non numeric input and formats the number on paste or change
 	$("input.account-mask").on("change paste", function() {
     	var $this = $(this);
     	setTimeout(function () {
@@ -316,7 +339,8 @@ function initInputs() {
 	//Input masking for VPS account numbers - regular input (keys)
 	$("input.vps-account-mask").on("keydown", function(event) {
 		if(!browserIsIEOnWindowsPhone()) {
-			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
+				//Don't mess with value on delete,
+				//backspace, arrows, shift, ctrl, home or end key
 	    	if(userIsTyping($(this), event)) {
 	    		var thisVal = $(this).val();
 				if (thisVal.length == 5) {
@@ -325,22 +349,25 @@ function initInputs() {
 	    	}
     	}
 	});
-    $("input.vps-account-mask").on("change paste", function() {
-    	var $this = $(this);
-    	setTimeout(function () {
-			clearNonNumericInput($this);
-    		$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 5; }, 0));
-    	}, 100);
-    });
+	//Clears non numeric input and formats the number on paste or change
+  $("input.vps-account-mask").on("change paste", function() {
+  	var $this = $(this);
+  	setTimeout(function () {
+		clearNonNumericInput($this);
+  		$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 5; }, 0));
+  	}, 100);
+  });
 
-	//Phone numbers
+	//To clear non numeric input - except "+" "-" "(" and ")"
+	//when a key is released (incase the user somehow
+	//manged to sneek in a non numeric character)
 	$('input[type="tel"]').on("keyup", function() {
 		clearNonNumericInput($(this), "+-() ");
 	});
 
 	//Input masking for phone numbers
 	//Sets the following format to the input: {000 00 000}
-	//on key down (except for when "edit keys" are pressed)
+	//when a key is pressed (except "edit keys")
 	$('input[type="tel"]').on("keydown", function(event) {
 		if(!browserIsIEOnWindowsPhone()) {
 			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
@@ -373,7 +400,7 @@ function initInputs() {
     });
 
 	//Used to set the marker at the end of the prefilled input
-	//(e.g country code for phone numbers)
+	//e.i country code for phone numbers
 	$(".prevent-select-on-tab").on("keyup", function(event)  {
  		var key = event.keyCode || event.charCode;
  		if (key == 9) {
@@ -387,7 +414,7 @@ function initInputs() {
  	});
 
 	//Sets the following format to the input: {000 000 000}
-	//on key down (except for when "edit keys" are pressed)
+	//when a key is pressed (except "edit keys")
 	$(".pad-3-by-3").on("keydown", function(event) {
 		if(!browserIsIEOnWindowsPhone()) {
 			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
@@ -400,8 +427,8 @@ function initInputs() {
     	}
     });
 
-	//Sets the following format to the input: {000 000 000}
-	//on change or paste
+		//Sets the following format to the input: {000 000 000}
+		//on change or paste
     $(".pad-3-by-3").on("change paste", function() {
     	var $this = $(this);
     	setTimeout(function () {
@@ -410,10 +437,17 @@ function initInputs() {
     	}, 100);
     });
 
+		//Validates percentage according to min/max attributes.
+		//This one is added here and not in the validation() function
+		//because it is the only validation needed for benifital owners.
+		//Those are added added dynamically using AJAX which means
+		//that this parent function (initInputs) must be called again
+		//when a benifital owner is added
     $(".input-percentage").on("change", function() {
     	var val = parseFloat($(this).val());
     	var max = $(this).attr("max");
     	var min = $(this).attr("min");
+
     	if(val <= max && val >= min) {
     		$(this).parent().parent().siblings("input[type=hidden]").val("true");
     	}
@@ -424,17 +458,12 @@ function initInputs() {
     });
 }
 
+//Inits all form controls
 function formControlEventbinding() {
 	initCheckBoxesAndRadios();
-	initHelptexts(); 
+	initHelptexts();
 	initInputs();
-}
-
-//Sets focus (focus()) doesn't work on mobile devices)
-function focusMobile($element) {
-	$element.on('touchstart', function() {
-    	$(this).focus();
-  	});
+	initAccordions();
 }
 
 //Scrolles selected element into view
@@ -446,6 +475,8 @@ function scrollTo($element, delay) {
 	}
 }
 
+//Toggels WAI-ARIA properties for a given accordion
+//(identified by its button)
 function toggleARIAPropertiesForAccordion($accBtn) {
 	var expanded = $accBtn.attr("aria-expanded");
 
@@ -457,7 +488,8 @@ function toggleARIAPropertiesForAccordion($accBtn) {
 	$correspondingPanel.attr("aria-hidden", ariaHiddenAttr);
 }
 
-
+//Sets WAI-ARIA properties for a given accordion
+//(identified by its button)
 function addARIAPropertiesToAccordion($accBtn) {
 	var $correspondingPanel = $accBtn.siblings(".panel:first");
 
@@ -467,6 +499,7 @@ function addARIAPropertiesToAccordion($accBtn) {
 	$correspondingPanel.attr("aria-hidden", "true");
 }
 
+//Opens all accordions that have errors
 function openAccordionsWithErrors($panels) {
 	$.each($panels, function() {
 		if (getFirstError($(this)).length) {
@@ -475,15 +508,17 @@ function openAccordionsWithErrors($panels) {
 				$correspondingButton.click();
 			}
 		}
-	});	
+	});
 }
 
+//Scrolls to the last unfinnished accordion if there are no accordions
+//with errors (there can only be errors if the forms has been validated)
 function scrollToLastUnfinnishedAccordion($panels) {
 	//If the form has an error: open all the accordions with errors
 	if (getFirstError($("#main-content_content")).length) {
 		openAccordionsWithErrors($panels);
 	}
-	else {//If not: scroll to and open the last accordion added
+	else { //If not: scroll to and open the last accordion added
 		var $lastAccordionContainer = $(".focus-last-child .accordion-container").last();
 		var $lastAccordionBtn = $lastAccordionContainer.find(".accordion").first();
 		if (!$lastAccordionBtn.hasClass("active")) {
@@ -502,6 +537,7 @@ function scrollToLastUnfinnishedAccordion($panels) {
 	}
 }
 
+//Toggle a given accordion (identified by its button)
 function toggleAccordion($accBtn) {
 	$accBtn.toggleClass("active");
 	var $correspondingPanel = $accBtn.siblings(".panel").first();
@@ -509,18 +545,21 @@ function toggleAccordion($accBtn) {
 	toggleARIAPropertiesForAccordion($accBtn);
 }
 
+//Initalizes accordions that are added dynamically by AJAX
 function initAccordionsAddedByAJAX() {
+
+	//Add WAI-ARIA attributes
 	var $accBtns = $(".load-container button.accordion");
 	$.each($accBtns, function() {
 		addARIAPropertiesToAccordion($(this));
 	});
-	
+
 	//Appends attributes such as max/min to inputs
 	//inside the panel of the accordion
 	appendAttributesToNumberInputs();
-	
+
 	//Sets the text of the button to the same as the name of
-	//the benefitial owner
+	//the benefitial owner (accordion has class "set-name-accordion")
 	var setAccordionBtnTitle = function($accordionContainer) {
 		var prefix = '<span class="chev"></span><span class="desc">';
 		var suffix = "</span>";
@@ -534,7 +573,7 @@ function initAccordionsAddedByAJAX() {
 			$button.html(prefix + "Reell rettighetshaver " + (idSplit.length > 0 ? idSplit[idSplit.length - 1] : "") + suffix);
 		}
 	};
-	
+
 	$.each($(".load-container .set-name-accordion"), function() {
 		setAccordionBtnTitle($(this));
 	});
@@ -542,19 +581,19 @@ function initAccordionsAddedByAJAX() {
 	$(".load-container .set-name-accordion .accordion-description").on("change", function() {
 		setAccordionBtnTitle($(this).closest(".set-name-accordion"));
 	});
-	
-	//Init for autofill country phone code
-	//and city
+
+	//Init for autofill country phone code 	and city
 	bindEventsThatCallsExternalAPIs();
-	
-	//Init number patterns
+
+	//Init number patterns and percentage validation
 	initInputs();
-	
+
+	//Init delete buttons (to delete accordions)
 	initDeleteButtons();
-	
+
 	//Prevent user from adding more items than allowed
 	disableAddButtonsWhenMaxIsReached();
-	
+
 	//Scrolls to the last unfinnished accordion
 	//(that has class "focus-last-child")
 	var $panels = $(".load-container .accordion-container .panel");
@@ -567,15 +606,16 @@ function initAccordionsAddedByAJAX() {
 	scrollToElementAddedByAJAX = true;
 }
 
+//Initalizes regular accordions
 function initAccordions() {
-	var $panels = $(".accordion-container:not(.added-by-AJAX) .panel");
 	//Panels
+	var $panels = $(".accordion-container:not(.added-by-AJAX) .panel");
 	$.each($panels, function() {
 		if (!$(this).hasClass("hidden")) {
 			$(this).addClass("hidden");
 		}
 	});
-	
+
 	//Buttons
 	var $accBtns = $(".accordion-container:not(.added-by-AJAX) button.accordion");
 	$.each($accBtns, function() {
@@ -584,7 +624,7 @@ function initAccordions() {
 	$accBtns.on("click", function() {
 		toggleAccordion($(this));
 	});
-	
+
 	//Set aria attributes for edit buttons (that are inside summary accordions)
 	$.each($(".accordion-container .summary-container"), function() {
 		var $changeBtn = $(this).siblings(".btn-primary");
@@ -592,35 +632,7 @@ function initAccordions() {
 	});
 }
 
-//TODO - not currently needed or in use
-function splitTextElegantly(text, nRows) {
-	var words = text.split(" ");
-	var nWords = words.length;
-	var nCharacters = text.length;
-
-	//console.log("split " + text + " in " + nRows + " rows. It has " + nWords + " words");
-
-	if (nWords < nRows) {
-		return text;
-	}
-	else if (nWords == nRows) {
-		var newText = "";
-		for(var i=0; i < nWords - 1; i++) {
-			newText += words[i] + "<br>";
-		}
-		return newText += words[nWords - 1];
-	}
-	else {
-		var mark = nCharacters / nRows; //Assume X / 2
-
-		var newText = "";
-		for(var i=nWords - 1; i > 0; i--) {
-			newText = "<br>" + words[i]
-		}
-		return words[0].concat(newText);
-	}
-}
-
+//Init skip-links - navigates to main content
 function navigateToMainContentEventBinding() {
 	$("#skip-navigation a").on("click", function() {
 		var $input = $("#main-content").find(":input[id]:first");
@@ -638,9 +650,12 @@ function appendAttributesToNumberInputs() {
 	$(".input-percentage").attr("max", "100");
 }
 
+//Adjusts the auto generated error list
 function adjustErrorMessageList() {
 	$(".error-summary").hide();
 	$.each($(".error-summary > div"), function(index) {
+
+		//Adjust the HTML markup
 		var $firstChild = $(this).children(":first");
 		var autoGeneratedHeadingSplit = $firstChild.text().split("(");
 
@@ -652,48 +667,50 @@ function adjustErrorMessageList() {
 
 		var $container = $(this);
 
-		
+
 		var documentName = "Swedbank_KYC";
 		if($("title").text().split("-")[1].trim() == "Bedrift") {
 			documentName += "_Bedrift";
 		}
 
-		//Variables used manipulate error text and style of 
+		//Variables used manipulate error text and style of
 		//benifital owners (to avoid identical text on links).
 		//And adjust the layout so it's easier to read
 		var prefixBenifitialOwners = "";
 		var prevBenifitialOwner = "1";
 		var errorsForBenifitialOwnersHasBeenListed = false;
-		
+
+		//Adjust the error messages and the links
 		var sessionTagIndex = window.location.href.indexOf("xsessiontag");
 		var getUrl = window.location.href.substring(0, sessionTagIndex) + "documentName=" + documentName + "&pageNumber=" + pageNumber;
+
 		$.get(getUrl, function(data) {
 			var trimmedData = data.substring(data.indexOf("<form"), data.indexOf("</form>") + 8);
 			var $DOM = $($.parseHTML(trimmedData));
-			
-			//Updates some of the links in the list of errors
+
+			//Update the links in the list of errors
 			$.each($container.find("ul li a"), function(index) {
 				var fieldID = $(this).attr("href").split("#").pop().replace(".", "\\.");
 				var $field = $DOM.find("#"+fieldID);
 				if($field != undefined && $field.hasClass("control-validation")) {
-					
+
 					//Update error text
 					var $correspondingLegend = $field.parent().siblings("legend");
 					$(this).text($correspondingLegend.text() + " (" + $(this).text() + ")");
-					
+
 					//Make an exception for the question about PEP with
 					//pep-text-container_legend (company only)
 					if ($correspondingLegend.attr("id") == "pep-text-container_legend") {
-						
+
 						var $PEPLegendLink  = $(this);
-						
+
 						var getXMLUrl = window.location.href.replace("htmlViewer", "xmlData");
 						$.get(getXMLUrl, function(xmlData) {
-							
+
 							var aktorerIBedriftenChilds = xmlData.getElementsByTagName("aktorer-i-bedriften")[0].childNodes;
-							
+
 							for (var i=0; i < aktorerIBedriftenChilds.length; i++) {
-								
+
 								//Update the text of the error message (the company does not have any benifital owners)
 								if (aktorerIBedriftenChilds[i].nodeName == "reelle-rettighetshavere" && aktorerIBedriftenChilds[i].getAttribute("har") == "nei") {
 									$PEPLegendLink.text($PEPLegendLink.text().replace("reelle rettighetshavere, ", ""));
@@ -701,52 +718,61 @@ function adjustErrorMessageList() {
 							}
 						});
 					}
-					
-					//Update the href so that it can be scrolled into view
+
+					//Update the href so that the input field (label) can be scrolled into view
 					$(this).attr("href", $(this).attr("href").split("#")[0] + "#" + $correspondingLegend.attr("id"));
-					
+
 					//Add som margin-top if needed
 					if (errorsForBenifitialOwnersHasBeenListed) {
 						$(this).parent().css("margin-top", "3em");
 						errorsForBenifitialOwnersHasBeenListed = false;
 					}
 				}
+				//Adjust link to file upload error
 				else if ($(this).text().toLowerCase().indexOf("laste opp fullmakt") > -1) {
 					$(this).attr("href", $(this).attr("href").split("#")[0] + "#fullmakt-container");
 				}
+				//Adjust text and link for benifital owners
 				else if (heading.indexOf("Aktører i bedriften") > -1) {
 					//Update error text
 					var currentBenifitialOwner = $(this).attr("href").split("_").pop().trim();
 					prefixBenifitialOwners = "Reell rettighetshaver " + currentBenifitialOwner + " - ";
 					$(this).prepend(prefixBenifitialOwners);
-					
+
 					//Update the href so that it can be scrolled into view nicely
 					//By making sure the label of the input is shown
 					$(this).attr("href", $(this).attr("href").split("#")[0] + "#" + "container-" + $(this).attr("href").split("#").pop());
-					
+
 					//Add som margin-top if needed
 					if (currentBenifitialOwner != prevBenifitialOwner) {
 						$(this).parent().css("margin-top", "3em");
 					}
 					prevBenifitialOwner = currentBenifitialOwner;
-					
+
 					errorsForBenifitialOwnersHasBeenListed = true;
 				}
-				else if ($field.length) { 
+				//Adjust link to input fields (so that the label is also scrolled into view, not just the input itself)
+				else if ($field.length) {
 					//Update the href so that it can be scrolled into view nicely
 					//By making sure the label of the input is shown
 					var $correspondingLabel = $field.parent().siblings(".label_text");
 					$(this).attr("href", $(this).attr("href").split("#")[0] + "#" + $correspondingLabel.attr("id"));
 				}
-				//As by: https://www.w3.org/TR/WCAG20-TECHS/ARIA7
-				//$(this).attr("aria-labelledby", "error-heading-"+ pageNumber); //Dette er antageligvis redundant
 		  });
 		});
 	});
+
+	//Adjust som more auto generated HTML mark-up
 	$(".error-summary").prepend("<h3>Vi må be deg om å rette opp noen feil</h3>");
 	$(".error-summary").show();
 }
 
+//Adjusts error messages that has class "trim-errormsg"
+//This is to present shorter error messages on submit than in
+//the error list presented at the end.
+//For example "Name is required" becomes "Required" when
+//displayed beneath the input label "Name"
+//But is shown as "Name is required" in the error list in the summary
 function adjustErrorMessages() {
 	$.each($(".trim-errormsg .digiforms_validation_message"), function() {
 		var newText = $(this).text().split("må").pop();
@@ -754,10 +780,11 @@ function adjustErrorMessages() {
 	});
 }
 
+//Appends WAI-ARIA landmarks for autogenerated elements
 function appendAriaAttributesForPageSections() {
 	//Landmarks for header
 	$(".header").attr("role", "banner");
-	
+
 	//Landmarks for main
 	$("#main-content").attr("role", "main");
 	var $mainContentLabelledby = $("#main-content_legend");
@@ -765,25 +792,28 @@ function appendAriaAttributesForPageSections() {
 		$mainContentLabelledby = $("#main-content_heading");
 	}
 	$("#main-content").attr("aria-labelledby", $mainContentLabelledby.attr("id"));
-	
+
 	//Bottom nav
 	$(".next-prev-nav").attr("role", "navigation");
 	$(".next-prev-nav").attr("aria-label", "Forrige / Neste");
 }
 
+//Toggles text on change
 function changeTextOnChange() {
+
+	//Adjusts the (auto generated) HTML for the specific PEP question
 	var $togglePEPText = $("#pep-text-container").find("fieldset legend:first");
 	$togglePEPText.text("Er noen av foretakets ");
 	$togglePEPText.append('<span class="text-toggle">reelle rettighetshavere, </span>styremedlemmer, daglig leder eller kontaktperson(er) en Politisk Eksponert Person (PEP)?');
 	$togglePEPText.append('<span class="asterix" aria-hidden="true"> *</span>');
-	
-	var $togglesText = $(".toggles-text-on-change");
-	
+
+	//Toggles text identified by the id suffix of the element itself
 	var toggle = function($toggleElement) {
 		var idSplit = $toggleElement.attr("id").split("toggles-");
 		var toggles = idSplit.pop().trim();
 		var action = idSplit[0].replace("-", "").trim();
-		
+
+		//Toggle text (show/hide)
 		if ($toggleElement.is(":checked")) {
 			if (action == "show") {
 				$("#" + toggles + " .text-toggle").show();
@@ -793,21 +823,26 @@ function changeTextOnChange() {
 			}
 		}
 	}
-	
+
+	//Get all elements that should toggle text on change
+	var $togglesText = $(".toggles-text-on-change");
+
+	//Init
 	$.each($togglesText, function() {
 		toggle($(this));
 	});
-	
+
+	//Add event handler
 	$togglesText.on("change", function() {
 		toggle($(this));
 	});
 }
 
+//Adjusts auto generated HTML mark-up
 function adjustAutoGeneratedElements() {
 	//Fix duplicate id:s
-
 	//Recursive function that updates the id of an element and all its children
-	var updateDuplicateIds = function(elements) { 
+	var updateDuplicateIds = function(elements) {
 		$.each(elements, function(i) {
 			$(this).attr("id", $(this).parent().attr("id") + $(this).attr("id") + i)
 	  		if ($(this).children().length > 0) {
@@ -827,18 +862,22 @@ function adjustAutoGeneratedElements() {
 
 	//Make adjustments to the error list on the last page
 	adjustErrorMessages();
-	
+
 	//Add WAI-aria landmarks to page sections
 	appendAriaAttributesForPageSections();
-	
+
 	//Toggles a text when
 	changeTextOnChange();
 }
 
+//Appends asterixes to mandatory fieldsets
+//- labels for checkboxes and radio buttons
 function appendAsterixToMandatoryFields() {
 	$(".mandatory > fieldset > legend").append('<span class="asterix" aria-hidden="true"> *</span>');
 }
 
+//Used to format phonenumber
+//Determines the index of the auto filled country code
 function getSplitIndexForPhoneNumber(val) {
 	return val.indexOf(") ") < 0 ?
 			(val.indexOf(")") < 0 ?
@@ -846,46 +885,52 @@ function getSplitIndexForPhoneNumber(val) {
 			: val.indexOf(") ") + 2;
 }
 
-//Start loading animation
+//Start loading animation in input
 function startLoadingAnimation($input) {
 	$input.attr("disabled", "disabled");
-	$input.parent().addClass("loading");	
+	$input.parent().addClass("loading");
 }
 
-//End loading animation
+//End loading animation in input
 function endLoadingAnimation($input) {
 	$input.removeAttr("disabled", "disabled");
-	$input.parent().removeClass("loading");	
+	$input.parent().removeClass("loading");
 }
 
+//Auto fills postal code using the API from bring.no
 function autoFillPostalCode() {
 	//Bind on keyup event, so that city/place is autofilled based on postal code
 	$(".input-postalcode").on("keyup change", function() {
 		var $inputPanel = $(this).closest(".input-panel");
 		var $selectLand = $inputPanel.find(".select-land").first();
-		if($selectLand) {			
+		if($selectLand) {
 			var countryCode = $selectLand.val().toLowerCase();
 			var postalCode = $(this).val();
 
 			var $inputPlace = $inputPanel.find(".input-place").first();
-			
-			$.getJSON("https://fraktguide.bring.no/fraktguide/api/postalCode.json?country=" + countryCode + "&pnr=" + postalCode, function(json){		
+
+			$.getJSON("https://fraktguide.bring.no/fraktguide/api/postalCode.json?country=" + countryCode + "&pnr=" + postalCode, function(json){
 				if(json.valid && json.result) {
 					//Autofill with result from API
 					$inputPlace.val(json.result);
 				}
-	    	});	
+	    	});
 		}
  	});
-	
-	//Toggles pattern for the postal code input
+
+	//Toggles pattern (used to bring up numeric keypad on iOS mobile)
+	//for the postal code input
 	var togglePattern = function($sel) {
 		var $formGroup = $sel.closest(".form-group");
 		var $postalCodeInputs = $formGroup.find(".input-postalcode");
-		
-		console.log("TOGGLE");
-		
+
 		var countryCode = $sel.val().toUpperCase();
+		//Here is a manual selction of countries (the ones that we assume are most common)
+		//that we add the patterns for.
+		//In reality most countries have numeric postal codes
+		//But since these tings sometimes change over time
+		//(it is proposed that all contries start using alpha numerical postal codes)
+		//It has been done this way for now (just to be safe)
 		if (countryCode == "NO" || countryCode == "SJ" || countryCode == "SE" || countryCode == "DK" || countryCode == "FI" || countryCode == "DE" || countryCode == "FR" || countryCode == "LI" || countryCode == "EE" || countryCode == "LV") {
 			$postalCodeInputs.attr("pattern", "[0-9]*"); //iOS
 			$postalCodeInputs.attr("inputmode", "numeric"); //Android
@@ -895,30 +940,30 @@ function autoFillPostalCode() {
 			$postalCodeInputs.removeAttr("inputmode"); //Android
 		}
 	}
-	
-	//Bind on change event, so that pattern on phones can be updated according to
+
+	//Bind on change event, so that pattern on iOS mobile can be updated according to
 	//postal code format.
 	$(".select-land").on("change", function() {
 		togglePattern($(this));
  	});
-	
+
 	//Toggle according to current country
 	$.each($(".select-land"), function() {
 		togglePattern($(this));
 	});
 }
 
-//Uses the api provided by restcountries.eu
+//Auto fills the country calling code using the api provided by restcountries.eu
 function autoFillCountryCallingCode() {
 	var setCountryCode = function($selects) {
 		if(!$selects.length) return;
-		
+
 		$.each($selects, function() {
 			var $sel = $(this);
 			var code = $sel.val().toLowerCase();
-		
+
 			$.getJSON("https://restcountries.eu/rest/v2/alpha/" + code, function(result){
-				
+
 				//Prepend country code to all phone inputs in  the current input-panel
 				var $formGroup = $sel.closest(".form-group");
 				var $phoneInputs = $formGroup.find('input[type="tel"]');
@@ -929,7 +974,7 @@ function autoFillCountryCallingCode() {
 					if (val.length == 0 || splitIndex == val.length) { //When input is empty
 						$(this).val("(+" + result.callingCodes[0] + ") ");
 					}
-					else {
+					else { //TODO - KAN FJERNES ETTER TESTING!
 						//$(this).val("(+" + result.callingCodes[0] + ") " + val.substring(splitIndex, val.length));
 						console.log("Skipping auto fill of country code. Value is: " + $(this).val() + " result returned by API is " + result.callingCodes[0] + " splitIndex is: " + splitIndex + " val.length is : " + val.length);
 					}
@@ -947,7 +992,10 @@ function autoFillCountryCallingCode() {
  	setCountryCode($(".select-land"));
 }
 
+//Auto fills the country calling code using the API provided by brreg.no
 function checkAndAutoFillFromOrgNr($orgNrInput) {
+
+	//Get the hidden validation input and error message
 	var $errorMessage = $orgNrInput.parent().find(".digiforms_validation_message");
 	var $validationField = $orgNrInput.closest(".input-panel").find("#orgnumber-valid");
 
@@ -959,7 +1007,7 @@ function checkAndAutoFillFromOrgNr($orgNrInput) {
 		var $companyNameInput = $formGroup.find(".input-company-name");
 		var companyName = "";
 
-		//Postadresse
+		//Mail address
 		var $countryInput = $formGroup.find(".select-land");
 		var country = $countryInput.val();
 		var $streetInput = $formGroup.find(".input-street");
@@ -968,110 +1016,127 @@ function checkAndAutoFillFromOrgNr($orgNrInput) {
 		var postalCode = "";
 		var $placeInput = $formGroup.find(".input-place");
 		var place = "";
-		
+
 		//Start loading animation
 		startLoadingAnimation($companyNameInput);
 		startLoadingAnimation($countryInput);
 		startLoadingAnimation($streetInput);
 		startLoadingAnimation($postalCodeInput);
 		startLoadingAnimation($placeInput);
-		
+
+		//First try in the "unit API" (no: "enhetsregisteret")
 		$.getJSON("https://data.brreg.no/enhetsregisteret/enhet/" + orgNr + ".json", function(result) {
 			if (result.status != 400) {
+
+				//Store data returned by the API
 				companyName = result.navn;
 				country = result.forretningsadresse.landkode;
 				street = result.forretningsadresse.adresse;
 				postalCode = result.forretningsadresse.postnummer;
 				place = result.forretningsadresse.poststed;
-				$validationField.val("true");
+
+				//Set error message text and value for hidden validation inputs
 				clearErrormessage($placeInput);
 				clearErrormessage($orgNrInput);
+				$validationField.val("true");
 			}
 		}).fail(function(jqxhr) {
-			console.log("UNDERENHET - Status is: " + jqxhr.status);
+				//If the first request failed we try the next API "sub units" (no: "underenheter")
 		    if (jqxhr.status == 404) {
-		       	//Prøv å slå mot underenhetsregisteret istedenfor: (kanskje ikke best practice?)
-				$.getJSON("https://data.brreg.no/enhetsregisteret/underenhet/" + orgNr + ".json", function(result) {
-					if (result.status != 400) {
-						companyName = result.navn;
-						country = result.beliggenhetsadresse.landkode;
-						street = result.beliggenhetsadresse.adresse;
-						postalCode = result.beliggenhetsadresse.postnummer;
-						place = result.beliggenhetsadresse.poststed;
-						$validationField.val("true");
-						clearErrormessage($placeInput);
-						clearErrormessage($orgNrInput);
-					}
-					else {
-						$errorMessage.text("Ugyldig organisasjonsnummer");
-						$validationField.val("false");
-					}
-					
+					$.getJSON("https://data.brreg.no/enhetsregisteret/underenhet/" + orgNr + ".json", function(result) {
+						if (result.status != 400) {
+
+							//Store data returned by the API
+							companyName = result.navn;
+							country = result.beliggenhetsadresse.landkode;
+							street = result.beliggenhetsadresse.adresse;
+							postalCode = result.beliggenhetsadresse.postnummer;
+							place = result.beliggenhetsadresse.poststed;
+
+							//Set error message text and value for hidden validation inputs
+							clearErrormessage($placeInput);
+							clearErrormessage($orgNrInput);
+							$validationField.val("true");
+						}
+						else {
+							//Set error message text and value for hidden validation input
+							$errorMessage.text("Ugyldig organisasjonsnummer");
+							$validationField.val("false");
+						}
+
+						//Remove loading animation
+						endLoadingAnimation($companyNameInput);
+						endLoadingAnimation($countryInput);
+						endLoadingAnimation($streetInput);
+						endLoadingAnimation($postalCodeInput);
+						endLoadingAnimation($placeInput);
+
+						//Auto fill with data from API
+						$companyNameInput.val(companyName);
+						$countryInput.val(country);
+						$streetInput.val(street);
+						$postalCodeInput.val(postalCode);
+						$placeInput.val(place);
+					});
+			   }
+			   else {
+						//Remove loading animation
+						endLoadingAnimation($companyNameInput);
+						endLoadingAnimation($countryInput);
+						endLoadingAnimation($streetInput);
+						endLoadingAnimation($postalCodeInput);
+						endLoadingAnimation($placeInput);
+
+						//Auto fill with data from API
+						$companyNameInput.val(companyName);
+						$countryInput.val(country);
+						$streetInput.val(street);
+						$postalCodeInput.val(postalCode);
+						$placeInput.val(place);
+
+						//Set error message text and value for hidden validation input
+			    	$errorMessage.text("Ugyldig organisasjonsnummer");
+			    	$validationField.val("false");
+		    }
+			}).always(function() {
 					//Remove loading animation
 					endLoadingAnimation($companyNameInput);
 					endLoadingAnimation($countryInput);
 					endLoadingAnimation($streetInput);
 					endLoadingAnimation($postalCodeInput);
 					endLoadingAnimation($placeInput);
-					
+
+					//Auto fill with data from API
 					$companyNameInput.val(companyName);
 					$countryInput.val(country);
 					$streetInput.val(street);
 					$postalCodeInput.val(postalCode);
 					$placeInput.val(place);
-				});
-		    }
-		    else {
-				//Remove loading animation
-				endLoadingAnimation($companyNameInput);
-				endLoadingAnimation($countryInput);
-				endLoadingAnimation($streetInput);
-				endLoadingAnimation($postalCodeInput);
-				endLoadingAnimation($placeInput);
-				
-				$companyNameInput.val(companyName);
-				$countryInput.val(country);
-				$streetInput.val(street);
-				$postalCodeInput.val(postalCode);
-				$placeInput.val(place);
-				
-		    	$errorMessage.text("Ugyldig organisasjonsnummer");
-		    	$validationField.val("false");
-		    }
-		}).always(function() {
-				//Remove loading animation
-				endLoadingAnimation($companyNameInput);
-				endLoadingAnimation($countryInput);
-				endLoadingAnimation($streetInput);
-				endLoadingAnimation($postalCodeInput);
-				endLoadingAnimation($placeInput);
-				
-				$companyNameInput.val(companyName);
-				$countryInput.val(country);
-				$streetInput.val(street);
-				$postalCodeInput.val(postalCode);
-				$placeInput.val(place);
-		});
+			});
 	}
-	else {
+	else { //Adjust error message and hidden validation input
 		if (orgNr.length > 0) $errorMessage.text("Må være 9 siffer");
 		else $errorMessage.text("Må fylles ut");
 		$validationField.val("false");
 	}
 }
 
+//Binds events to input that is to auto fill other initInputs
+//based on an organization number
 function autoFillFromOrgNr() {
 	$(".input-org-number").on("change paste input", function() {
 		checkAndAutoFillFromOrgNr($(this));
 	});
 }
 
+//Binds all events that calls external APIs
 function bindEventsThatCallsExternalAPIs() {
 	autoFillPostalCode();
 	autoFillCountryCallingCode();
 	autoFillFromOrgNr();
 }
 
+//Removes whitespaces from a given string
 function removeWhiteSpaces(str) {
 	var subStrings = str.split(" ");
 	var newStr = "";
@@ -1081,37 +1146,39 @@ function removeWhiteSpaces(str) {
 	return newStr;
 }
 
+//Validation using the algorithm MOD11
 function validationMOD11(val, weightNumber, ignoreLength) {
 	var number = removeWhiteSpaces(val);
 
+	//1. Sum up all the products of multiplying
+	//each digit with the corresponding weight number
 	var sum = 0;
 	for(var i=0; i < number.length - 1; i++) {
-		//console.log(number.charAt(i) + " * " + weightNumber.charAt(i) + " = " + (number.charAt(i) * weightNumber.charAt(i)));
 		sum += number.charAt(i) * weightNumber.charAt(i);
 	}
 
+	//2. Calculate the reminder using modulo 11
 	var reminderMOD11 = sum % 11;
 
-	//Calculate control number (norwegian account numbers can't have a reminder of 1)
+	//3. Calculate control number (norwegian account numbers/social sequrity numbers can't have a reminder of 1)
 	var calculatedControllNumber = reminderMOD11 == 0 ? 0 : 11 - reminderMOD11;
-	
-	//Check if the calculated control number is equal to the given one ()
+
+	//4. Check if the calculated control number is equal to the one entered by the user
 	if (calculatedControllNumber != number[number.length - 1] && (ignoreLength || number.length == 11)) {
-		//console.log("not valid. Calculated: " + calculatedControllNumber + " actual: " + number[number.length - 1]);
 		return false;
 	}
 	else if (ignoreLength || number.length == 11) {
-		//console.log("valid!");
 		return true;
 	}
 	else {
-		//console.log("invalid, incorrect length!");
 		return false;
 	}
 }
 
+//Custom validation for certain inputs
 function validation() {
 
+	//Returns the corresponding hidden input used for validation
 	var findMyHiddenBrother = function($input) {
 		var $validationField = $input.closest(".label_control").parent().parent().find("input[type=hidden]:first");
 		return $validationField;
@@ -1134,7 +1201,7 @@ function validation() {
 			$errorMessage.text("Ugyldig kontonummer");
 		}
 	}
-	
+
 	var $accountInputs = $("input.numeric-text.account-mask");
 	$accountInputs.on("change", function() {
 		validateAccountNo($(this));
@@ -1187,22 +1254,22 @@ function validation() {
 			}
 		}
 	}
-	
+
 	var $socialSecurityNumberNoInputs = $("input.numeric-text.input-social-security-number-no");
 	$socialSecurityNumberNoInputs.on("change", function() {
 		validateSocialSecurityNumberNo($(this));
 	});
-	
+
 	$.each($socialSecurityNumberNoInputs, function() {
 		validateSocialSecurityNumberNo($(this));
 	});
 
-	//Checks and sets validationmessage depending on feedback from 
-	//External API (brreg)
+	//Checks and sets validationmessage depending on feedback from
+	//external API (brreg in this case)
 	var $orgNumberInputs = $(".input-org-number");
 	if($orgNumberInputs.length) checkAndAutoFillFromOrgNr($orgNumberInputs);
 
-	//Validate lei-number
+	//Validate LEI-number
 	var validateNValidateInputs = function($element) {
 		var $validationInput = findMyHiddenBrother($element);
 		var valTrimmed = removeWhiteSpaces($element.val());
@@ -1213,16 +1280,17 @@ function validation() {
 			$validationInput.val(false);
 		}
 	}
-	
+
 	var $nValidateInputs = $("input.n-validate");
 	$nValidateInputs.on("change", function() {
 		validateNValidateInputs($(this));
 	});
-	
+
 	$.each($nValidateInputs, function() {
 		validateNValidateInputs($(this));
 	});
-	
+
+	//Run validation on submit
 	$("#knapp_neste").on("click", function() {
 		//Validate account numbers
 		$.each($accountInputs, function() {
@@ -1233,12 +1301,12 @@ function validation() {
 		$.each($vpsAccountInputs, function() {
 			validateVPS($(this));
 		});
-		
+
 		//Validate social security numbers
 		$.each($socialSecurityNumberNoInputs, function() {
 			validateSocialSecurityNumberNo($(this));
 		});
-		
+
 		//Validate lei-number
 		$.each($nValidateInputs, function() {
 			validateNValidateInputs($(this));
@@ -1246,17 +1314,16 @@ function validation() {
 	});
 }
 
-function setOffset($element) {
-	var widthOffset = ($element.width() * 1.5) + "px";
-	$element.attr("style", "padding-left: calc(50% - " + widthOffset + ")");
-}
-
+//Gets the first error in the form
 function getFirstError($root) {
 	return $root.find(".digiforms_validation_message:first");
 }
 
+//Scrolls the first error into view
 function scrollToFirstError() {
-	//if (window.location.href.indexOf("#id-") < 0 && window.location.href.indexOf("#container-") < 0) {
+
+	//Don't mess with the scrolling incase the URL links to
+	//an element on the page (e.i error links on the last page)
 	if (window.location.href.indexOf("#") < 0) {
 		var $firstError = getFirstError($("body")).closest(".label_control").parent();
 
@@ -1269,6 +1336,7 @@ function scrollToFirstError() {
 	}
 }
 
+//Initalizes file download links
 function initFileDownloadLinks() {
 	var sessionTag = $("#frm").attr("action").split("?")[1];
 	$.each($(".file-download"), function() {
@@ -1276,12 +1344,15 @@ function initFileDownloadLinks() {
 	});
 }
 
+//Sets WAI-ARI for (auto generated) file download buttons (for accessibility)
 function setAriaAttributesForFileDownloadButtons() {
 	$.each($(".file-download"), function() {
 		$(this).attr("aria-label", "Åpne");
 	});
 }
 
+//Adjusts (auto generated) error message for file uploads.
+//Translated to norwegian in this case
 function adjustErrorMessagesForFileUpload() {
 	var $errorMsgContainer = $("label[for='vedlegg-btn']").parent().siblings("div:first");
 	if($errorMsgContainer.length) {
@@ -1297,13 +1368,17 @@ function adjustErrorMessagesForFileUpload() {
 	}
 }
 
-function initFileDownloads() {
+//Initalizes file downloads
+function initFileUpAndDownloads() {
 	initFileDownloadLinks();
 	setAriaAttributesForFileDownloadButtons();
 	adjustErrorMessagesForFileUpload();
+
+	//Sets WAI-ARI for (auto generated) file upload button (for accessibility)
 	$("#button_upload_updatexml").attr("aria-hidden", "true");
 }
 
+//Sets WAI-ARI for (auto generated) delete buttons (for accessibility)
 function setAriaAttributesForDeleteButtons() {
 	$.each($(".btn-delete"), function() {
 		var $deletableElement = $(this).closest(".deletable");
@@ -1323,9 +1398,15 @@ function setAriaAttributesForDeleteButtons() {
 	});
 }
 
+//Initalizes delete buttons
 function initDeleteButtons() {
+	//Set WAI-ARI (for accessibility)
 	setAriaAttributesForDeleteButtons();
-	
+
+	//Alters the (auto generated) onclick attribute so that necessary actions
+	//Can be performerd before doing the AJAX call
+	//This is to make the deletion a bit more understandable to the user (gives better feedback)
+	//and make it possible to scroll newly added element into view
 	$.each($(".load-container .btn-delete"), function() {
 		if ($(this).attr("onclick").indexOf("var callback") > -1) {
 			return;
@@ -1343,15 +1424,23 @@ function disableAddButtonsWhenMaxIsReached() {
 	if($loadContainer.find(".accordion-container").length > 5) {
 		$loadContainer.siblings(".add-content").prop("disabled", true);
 		if(!$("#button-disabled-description").length) {
-			$loadContainer.append("<p id='button-disabled-description' class='text-center'><strong>Du kan ikke legge til flere rettighetshavere.</strong></p>");	
+			//Show info text
+			//As per now we only have one of these (so the message is hard coded) - should be modified if a more generic functionallity is needed
+			$loadContainer.append("<p id='button-disabled-description' class='text-center'><strong>Du kan ikke legge til flere rettighetshavere.</strong></p>");
 		}
 	}
 	else {
+		//Disable the add button
 		$loadContainer.siblings(".add-content").prop("disabled", false);
 	}
 }
 
+//Initalizes elements that triggers an AJAX update
 function initAJAXUpdateElements() {
+
+	//Alters the (auto generated) onclick attribute so that necessary actions
+	//Can be performerd before doing the AJAX call
+	//This is to make it possible to scroll newly added element into view
 	$.each($(".triggers-ajax-update-scroll-to-first"), function() {
 		var doBeforeOnchange = "scrollToElementAddedByAJAX = true;";
 		if($(this).attr("onchange").indexOf(doBeforeOnchange) > -1) {
