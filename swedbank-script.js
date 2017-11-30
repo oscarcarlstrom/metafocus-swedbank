@@ -553,25 +553,19 @@ function openAccordionsWithErrors($panels) {
 //Scrolls to the last unfinnished accordion if there are no accordions
 //with errors (there can only be errors if the forms has been validated)
 function scrollToLastUnfinnishedAccordion($panels) {
-	//If the form has an error: open all the accordions with errors
-	if (getFirstError($("#main-content_content")).length) {
-		openAccordionsWithErrors($panels);
-	}
-	else { //If not: scroll to and open the last accordion added
-		var $lastAccordionContainer = $(".focus-last-child .accordion-container").last();
-		var $lastAccordionBtn = $lastAccordionContainer.find(".accordion").first();
-		if (!$lastAccordionBtn.hasClass("active")) {
-			var blankFormInputs = false;
-			$.each($lastAccordionContainer.find("input"), function() {
-				if (!$(this).val()) {
-					blankFormInputs = true;
-					return false;
-				}
-			});
-			if (blankFormInputs) {
-				$lastAccordionBtn.click();
-				scrollTo($lastAccordionContainer, 1000);
+	var $lastAccordionContainer = $(".focus-last-child .accordion-container").last();
+	var $lastAccordionBtn = $lastAccordionContainer.find(".accordion").first();
+	if (!$lastAccordionBtn.hasClass("active")) {
+		var blankFormInputs = false;
+		$.each($lastAccordionContainer.find("input"), function() {
+			if (!$(this).val()) {
+				blankFormInputs = true;
+				return false;
 			}
+		});
+		if (blankFormInputs) {
+			$lastAccordionBtn.click();
+			scrollTo($lastAccordionContainer, 1000);
 		}
 	}
 }
