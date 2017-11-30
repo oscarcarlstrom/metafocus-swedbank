@@ -744,36 +744,18 @@ function adjustErrorMessageList() {
 						var $PEPLegendLink  = $(this);
 
 						var getXMLUrl = window.location.href.replace("htmlViewer", "xmlData");
+						$.get(getXMLUrl, function(xmlData) {
 
-						/*function parseXML(xml) {
-							if (jQuery.browser.msie) {
-									 console.log("dd3");
-									 var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-									 xmlDoc.loadXML(xml);
-									 xml = xmlDoc;
-							 }
-							 console.log("dd4");
-							 return xml;
-						}*/
+							var aktorerIBedriftenChilds = xmlData.getElementsByTagName("aktorer-i-bedriften")[0].childNodes;
 
-						$.ajax({
-			        type: "GET",
-			        url: getXMLUrl,
-			        dataType: "xml",
-			        success: function (data) {
-								var xmlData = data;//parseXML(data);
-								var aktorerIBedriftenChilds = xmlData.getElementsByTagName("aktorer-i-bedriften")[0].childNodes;
-								console.log("success!");
+							for (var i=0; i < aktorerIBedriftenChilds.length; i++) {
 
-								for (var i=0; i < aktorerIBedriftenChilds.length; i++) {
-
-									//Update the text of the error message (the company does not have any benifital owners)
-									if (aktorerIBedriftenChilds[i].nodeName == "reelle-rettighetshavere" && aktorerIBedriftenChilds[i].getAttribute("har") == "nei") {
-										$PEPLegendLink.text($PEPLegendLink.text().replace("reelle rettighetshavere, ", ""));
-									}
+								//Update the text of the error message (the company does not have any benifital owners)
+								if (aktorerIBedriftenChilds[i].nodeName == "reelle-rettighetshavere" && aktorerIBedriftenChilds[i].getAttribute("har") == "nei") {
+									$PEPLegendLink.text($PEPLegendLink.text().replace("reelle rettighetshavere, ", ""));
 								}
-			        }
-			    });
+							}
+						});
 					}
 
 					//Update the href so that the input field (label) can be scrolled into view
