@@ -1485,7 +1485,7 @@ function disableAddButtonsWhenMaxIsReached() {
 //Initalizes elements that triggers an AJAX update
 function initAJAXUpdateElements() {
 
-	//Alters the (auto generated) onclick attribute so that necessary actions
+	//Alters the (auto generated) onchange attribute so that necessary actions
 	//Can be performerd before doing the AJAX call
 	//This is to make it possible to scroll newly added element into view
 	$.each($(".triggers-ajax-update-scroll-to-first"), function() {
