@@ -745,7 +745,7 @@ function adjustErrorMessageList() {
 
 						var getXMLUrl = window.location.href.replace("htmlViewer", "xmlData");
 
-						function parseXML(xml) {
+						/*function parseXML(xml) {
 							if (jQuery.browser.msie) {
 									 console.log("dd3");
 									 var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
@@ -754,14 +754,14 @@ function adjustErrorMessageList() {
 							 }
 							 console.log("dd4");
 							 return xml;
-						}
+						}*/
 
 						$.ajax({
 			        type: "GET",
 			        url: getXMLUrl,
-			        dataType: ($.browser.msie) ? "text" : "xml",
+			        dataType: "xml",
 			        success: function (data) {
-								var xmlData = parseXML(data);
+								var xmlData = data;//parseXML(data);
 								var aktorerIBedriftenChilds = xmlData.getElementsByTagName("aktorer-i-bedriften")[0].childNodes;
 								console.log("success!");
 
