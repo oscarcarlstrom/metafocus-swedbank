@@ -1,6 +1,9 @@
 //Used to detect when the CTRL key is pressed
 var ctrlDown;
 
+//Used to detect when the SHIFT key is pressed
+var shiftDown;
+
 //Used to detect when the TAB key is pressed
 var tabDown;
 
@@ -67,14 +70,12 @@ function initGlobalKeyEventListener() {
 
 	//Checks if the CTRL key is pressed
 	ctrlDown = false;
-
 	$(document).on("keydown", function(event) {
 		var key = event.keyCode || event.charCode;
 		if (key == 17) {
 			ctrlDown = true;
 		}
 	});
-
 	$(document).on("keyup", function(event) {
 		var key = event.keyCode || event.charCode;
 		if (key == 17) {
@@ -82,16 +83,29 @@ function initGlobalKeyEventListener() {
 		}
 	});
 
+	//Checks if the SHIFT key is pressed
+	shiftDown = false;
+	$(document).on("keydown", function(event) {
+		var key = event.keyCode || event.charCode;
+		if (key == 16) {
+			shiftDown = true;
+		}
+	});
+	$(document).on("keyup", function(event) {
+		var key = event.keyCode || event.charCode;
+		if (key == 16) {
+			shiftDown = false;
+		}
+	});
+
 	//Checks if the TAB key is pressed
 	tabDown = false;
-
 	$(document).on("keydown", function(event) {
 		var key = event.keyCode || event.charCode;
 		if (key == 9) {
 			tabDown = true;
 		}
 	});
-
 	$(document).on("keyup", function(event) {
 		var key = event.keyCode || event.charCode;
 		if (key == 9) {
@@ -256,8 +270,12 @@ function initInputs() {
 
 	//Checks if keyCode is numeric
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
-	var isNumericKey = function(keyCode, exceptionKeyCodes) {
-		if (browserIsIEOnWindowsPhone() || (keyCode >= 48 && keyCode <= 57) || (keyCode >= 96 && keyCode <= 105) || (exceptionKeyCodes != undefined && $.inArray(keyCode, exceptionKeyCodes) > -1)) {
+	//allowShift makes an exception to allow the SHIFT key to be pressed (e.i for phone numbers)
+	var isNumericKey = function(keyCode, exceptionKeyCodes, allowShift) {
+		if (browserIsIEOnWindowsPhone() ||
+			((allowShift || !shiftDown) && keyCode >= 48 && keyCode <= 57) ||
+			(keyCode >= 96 && keyCode <= 105) ||
+			(exceptionKeyCodes != undefined && $.inArray(keyCode, exceptionKeyCodes) > -1)) {
 			return true;
 		}
 		return false;
@@ -289,7 +307,7 @@ function initInputs() {
 	//Prevents user from entering non-numeric input
 	$("input.numeric-text").on("keydown", function(event) {
 		var key = event.keyCode || event.charCode;
-		if (userIsTyping($(this), event) && !isNumericKey(key)) {
+		if (!isEditKeyEvent(event) && !isNumericKey(key, [], false)) { //Don't allow SHIFT key
 			event.preventDefault();
 		}
 	});
@@ -311,7 +329,7 @@ function initInputs() {
 
 	//Function used to determine if a user is typing
 	function userIsTyping($element, event) {
-		return !isEditKeyEvent(event) && (!$element.attr("maxlength") || $element.val().length < parseInt($element.attr("maxlength"))) && parseInt($element.prop("selectionStart")) == parseInt($element.prop("selectionEnd"));
+		return !isEditKeyEvent(event) && (!$element.attr("maxlength") || $element.val().length < parseInt($element.attr("maxlength")));
 	}
 
 	//Input masking for norwegian account numbers - regular input (keys)
@@ -372,18 +390,19 @@ function initInputs() {
 	$('input[type="tel"]').on("keydown", function(event) {
 		if(!browserIsIEOnWindowsPhone()) {
 			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-	    	if(userIsTyping($(this), event)) {
-				var key = event.keyCode || event.charCode;
-				if (!isNumericKey(key, [32, 40, 41, 107, 109, 187, 189])) { //Don't remove characters: " ()+-"
-					event.preventDefault();
-				}
-	    		var thisVal = $(this).val();
+			var key = event.keyCode || event.charCode;
+			if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 40, 41, 107, 109, 187, 189], true)) { //Don't remove characters: " ()+-", allow SHIFT key to be pressed
+				event.preventDefault();
+			}
+
+			if(userIsTyping($(this), event)) {
+				var thisVal = $(this).val();
 				var index = thisVal.length - getSplitIndexForPhoneNumber(thisVal);
 
 				if (index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0)) {
 					maskAt(thisVal.length, " ", $(this));
 				}
-	    	}
+			}
     	}
 	});
 
@@ -447,7 +466,7 @@ function initInputs() {
 					clearNonNumericInput($this);
 					var formattedVal = formatAfterInput($this.val(), parseInt($this.attr("maxlength")), ".", function(i, x) { return i == 2 || i == 4; }, 2);
 					$this.val(formattedVal);
-					}, 100);
+			}, 100);
 		});
 		//For dates
 		//Clears non numeric unput on key released
@@ -458,22 +477,32 @@ function initInputs() {
 		//Prevents non-numeric input and sets the following format: {dd.mm.yyyy}
 		//when a key is pressed (except "edit keys")
 		$("input.format-date").on("keydown", function() {
-				if(!browserIsIEOnWindowsPhone()) {
-						var key = event.keyCode || event.charCode;
-						//Prevent non numeric characters
-						if (userIsTyping($(this), event) && !isNumericKey(key, [32, 190])) { //Don't remove characters: " " and "."
-								event.preventDefault();
-						}
+			if(!browserIsIEOnWindowsPhone()) {
+					var key = event.keyCode || event.charCode;
+					//Prevent non numeric characters
+					if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 190], false)) { //Don't remove characters: " " and ".", don't allow SHIFT key
+							event.preventDefault();
+					}
 
-						//Don't mess with value on delete,
-						//backspace, arrows, shift, ctrl, home or end key
-						if (userIsTyping($(this), event) && key != 190) {
-								var thisVal = $(this).val();
-								if (thisVal.length == 2 || thisVal.length == 5) {
-										maskAt(thisVal.length, ".", $(this));
-								}
-						}
-				}
+					//Don't mess with value on delete,
+					//backspace, arrows, shift, ctrl, home or end key
+					if (userIsTyping($(this), event) && key != 190) {
+							var thisVal = $(this).val();
+							if (thisVal.length == 2 || thisVal.length == 5) {
+									maskAt(thisVal.length, ".", $(this));
+							}
+					}
+			}
+		});
+
+		//Prevents user from entering non-numeric in
+		//numeric inputs (possible in several browsers, e.g safari, firefox)
+		$("input.numeric-decimal").on("keydown", function(event) {
+			var key = event.keyCode || event.charCode;
+			//Prevent non numeric characters
+			if (!isEditKeyEvent(event) && !isNumericKey(key, [188, 190], false)) {  //Don't remove characters: "," and ".", don't allow SHIFT key
+				event.preventDefault();
+			}
 		});
 
 		//Validates percentage according to min/max attributes.
@@ -482,7 +511,7 @@ function initInputs() {
 		//Those are added added dynamically using AJAX which means
 		//that this parent function (initInputs) must be called again
 		//when a benifital owner is added
-    $(".input-percentage").on("change", function() {
+    $(".input-percentage").on("change paste", function() {
     	var val = parseFloat($(this).val());
     	var max = $(this).attr("max");
     	var min = $(this).attr("min");
