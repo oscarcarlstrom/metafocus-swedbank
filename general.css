@@ -446,11 +446,12 @@ button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
     border-color: #c3b5a787;
 }
 
-/*Removes the spinner arrows in webkit browsers*/
+/*Removes the spinner arrows in webkit browsers and firefox*/
+input[type=number] {-moz-appearance: textfield;}
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
-  margin: 0; 
+  margin: 0;
 }
 
 /********** Animation for input that is loading data **********/
