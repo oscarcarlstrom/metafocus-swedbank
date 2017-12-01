@@ -40,6 +40,7 @@ a {
 h1 {
 	font-family: Swedbank HeadlineBlack, Arial, sans-serif !important;
 	color: #f35b1c;
+	font-weight: normal;
 }
 
 #heading-container h1 {
@@ -107,6 +108,7 @@ h4 {
     text-align: center;
     font-size: 260%;
     font-family: Swedbank HeadlineBlack, Arial, sans-serif;
+		font-weight: normal;
     color: #f35b1c;
     font-style: normal;
     text-decoration: none;
