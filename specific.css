@@ -50,6 +50,7 @@ h1 {
 
 #main-content_legend, h2, .sub-section > fieldset > legend, .control-sub-section > fieldset > legend, h3, h4 {
 	font-family: Swedbank Headline Bold, Arial, sans-serif !important;
+	font-weight: normal !important;
 	color: #512b2b;
 }
 
@@ -145,7 +146,7 @@ h4 {
 	/************* Header ***************/
 	#header-container figure {
 		vertical-align: baseline;
-	}	
+	}
 
 	#header-container figure > figcaption {
 		position: static;

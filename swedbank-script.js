@@ -738,15 +738,30 @@ function adjustErrorMessageList() {
 						var $PEPLegendLink  = $(this);
 
 						var getXMLUrl = window.location.href.replace("htmlViewer", "xmlData");
-						$.get(getXMLUrl, function(xmlData) {
 
-							var aktorerIBedriftenChilds = xmlData.getElementsByTagName("aktorer-i-bedriften")[0].childNodes;
+						//Gets the xml data from the server
+						//The dataType is set to "text" in order for
+						//it to work in Internet Explorer (at least IE11)
+						//The data is later parsed as xml, which works fine.
+						//Note that "cache" is set to "false"
+						//Otherwise IE will cache the data returned from this request
+						$.ajax({
+							type: "GET",
+							url: getXMLUrl,
+							dataType: "text", //IE
+							cache : false, //IE
+							xhr: function() {
+								return window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
+							},
+							success: function (data) {
+								var xmlData = $.parseXML(data);
+								var aktorerIBedriftenChilds = xmlData.getElementsByTagName("aktorer-i-bedriften")[0].childNodes;
 
-							for (var i=0; i < aktorerIBedriftenChilds.length; i++) {
-
-								//Update the text of the error message (the company does not have any benifital owners)
-								if (aktorerIBedriftenChilds[i].nodeName == "reelle-rettighetshavere" && aktorerIBedriftenChilds[i].getAttribute("har") == "nei") {
-									$PEPLegendLink.text($PEPLegendLink.text().replace("reelle rettighetshavere, ", ""));
+								for (var i=0; i < aktorerIBedriftenChilds.length; i++) {
+									//Update the text of the error message (the company does not have any benifital owners)
+									if (aktorerIBedriftenChilds[i].nodeName == "reelle-rettighetshavere" && aktorerIBedriftenChilds[i].getAttribute("har") == "nei") {
+										$PEPLegendLink.text($PEPLegendLink.text().replace("reelle rettighetshavere, ", ""));
+									}
 								}
 							}
 						});
