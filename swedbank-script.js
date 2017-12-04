@@ -272,8 +272,7 @@ function initInputs() {
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
 	//allowShift makes an exception to allow the SHIFT key to be pressed (e.i for phone numbers)
 	var isNumericKey = function(keyCode, exceptionKeyCodes, allowShift) {
-		if (browserIsIEOnWindowsPhone() ||
-			((allowShift || !shiftDown) && keyCode >= 48 && keyCode <= 57) ||
+		if (((allowShift || !shiftDown) && keyCode >= 48 && keyCode <= 57) ||
 			(keyCode >= 96 && keyCode <= 105) ||
 			(exceptionKeyCodes != undefined && $.inArray(keyCode, exceptionKeyCodes) > -1)) {
 			return true;
@@ -284,22 +283,20 @@ function initInputs() {
 	//Clears all non-numeric input from the input field
 	//Skips characters defined by the string "exceptions"
 	var clearNonNumericInput = function($input, updateSelectionRange, exceptions) {
-		if(!browserIsIEOnWindowsPhone()) {
-			var currentVal = $input.val();
-			var newVal = "";
-			for(var i = 0 ; i < currentVal.length; i++) {
-				var c = currentVal.charAt(i);
-				if ($.isNumeric(c) || (exceptions != undefined && exceptions.indexOf(c) > -1)) {
-					newVal += c;
-				}
+		var currentVal = $input.val();
+		var newVal = "";
+		for(var i = 0 ; i < currentVal.length; i++) {
+			var c = currentVal.charAt(i);
+			if ($.isNumeric(c) || (exceptions != undefined && exceptions.indexOf(c) > -1)) {
+				newVal += c;
 			}
-			if (newVal != currentVal) {
-				var selectionStart = parseInt($input.prop("selectionStart"));
-				$input.val(newVal);
-				if (updateSelectionRange) {
-					$input.prop("selectionStart", selectionStart - 1);
-					$input.prop("selectionEnd", selectionStart - 1);
-				}
+		}
+		if (newVal != currentVal) {
+			var selectionStart = parseInt($input.prop("selectionStart"));
+			$input.val(newVal);
+			if (updateSelectionRange) {
+				$input.prop("selectionStart", selectionStart - 1);
+				$input.prop("selectionEnd", selectionStart - 1);
 			}
 		}
 	}
