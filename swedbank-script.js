@@ -283,7 +283,7 @@ function initInputs() {
 
 	//Clears all non-numeric input from the input field
 	//Skips characters defined by the string "exceptions"
-	var clearNonNumericInput = function($input, exceptions) {
+	var clearNonNumericInput = function($input, updateSelectionRange, exceptions) {
 		if(!browserIsIEOnWindowsPhone()) {
 			var currentVal = $input.val();
 			var newVal = "";
@@ -294,7 +294,12 @@ function initInputs() {
 				}
 			}
 			if (newVal != currentVal) {
+				var selectionStart = parseInt($input.prop("selectionStart"));
 				$input.val(newVal);
+				if (updateSelectionRange) {
+					$input.prop("selectionStart", selectionStart - 1);
+					$input.prop("selectionEnd", selectionStart - 1);
+				}
 			}
 		}
 	}
@@ -303,7 +308,7 @@ function initInputs() {
 	//when a key is released (incase the user somehow
 	//manged to sneek in a non numeric character)
 	$("input.numeric-text").on("keyup", function() {
-		clearNonNumericInput($(this), " ");
+		clearNonNumericInput($(this), true, " ");
 	});
 
 	//Prevents user from entering non-numeric input
@@ -359,7 +364,7 @@ function initInputs() {
 	$("input.account-mask").on("change paste", function() {
     	var $this = $(this);
     	setTimeout(function () {
-				clearNonNumericInput($this);
+				clearNonNumericInput($this, false);
 	    	$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 4 || i == 6; }, 0));
     	}, 100);
     });
@@ -381,7 +386,7 @@ function initInputs() {
   $("input.vps-account-mask").on("change paste", function() {
   	var $this = $(this);
   		setTimeout(function () {
-				clearNonNumericInput($this);
+				clearNonNumericInput($this, false);
   		$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 5; }, 0));
   	}, 100);
   });
@@ -390,7 +395,7 @@ function initInputs() {
 	//when a key is released (incase the user somehow
 	//manged to sneek in a non numeric character)
 	$('input[type="tel"]').on("keyup", function() {
-		clearNonNumericInput($(this), "+-() ");
+		clearNonNumericInput($(this), true, "+-() ");
 	});
 
 	//Input masking for phone numbers
@@ -420,7 +425,7 @@ function initInputs() {
 	$('input[type="tel"]').on("change paste", function() {
     	var $this = $(this);
     		setTimeout(function () {
-				clearNonNumericInput($this, "+-() ");
+				clearNonNumericInput($this, false, "+-() ");
     		var prefix = $this.val().substring(0, getSplitIndexForPhoneNumber($this.val()));
     		$this.val(prefix + formatAfterInput($this.val().substring(getSplitIndexForPhoneNumber($this.val()), $this.val().length), $this.attr("maxlength"), " ", function(i, x) {
     			return i == 3 || i == 5 || (i > 7 && (i + 1) % 3 == 0);
@@ -461,7 +466,7 @@ function initInputs() {
     $(".pad-3-by-3").on("change paste", function() {
     	var $this = $(this);
     	setTimeout(function () {
-			clearNonNumericInput($this);
+			clearNonNumericInput($this, false);
     		$this.val(padBy(3, $this.val(), $this.attr("maxlength")));
     	}, 100);
     });
@@ -472,7 +477,7 @@ function initInputs() {
 	$("input.format-date").on("change paste", function() {
 		var $this = $(this);
 		setTimeout(function () {
-				clearNonNumericInput($this);
+				clearNonNumericInput($this, false);
 				var formattedVal = formatAfterInput($this.val(), parseInt($this.attr("maxlength")), ".", function(i, x) { return i == 2 || i == 4; }, 2);
 				$this.val(formattedVal);
 		}, 100);
@@ -480,7 +485,7 @@ function initInputs() {
 	//For dates
 	//Clears non numeric unput on key released
 	$("input.format-date").on("keyup", function() {
-			clearNonNumericInput($(this));
+		clearNonNumericInput($(this), true);
 	});
 	//For dates
 	//Prevents non-numeric input and sets the following format: {dd.mm.yyyy}
