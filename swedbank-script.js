@@ -66,13 +66,13 @@ function initGlobalKeyEventListener() {
 	//Checks if the CTRL key is pressed
 	ctrlDown = false;
 	$(document).on("keydown", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		if (key == 17) {
 			ctrlDown = true;
 		}
 	});
 	$(document).on("keyup", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		if (key == 17) {
 			ctrlDown = false;
 		}
@@ -81,13 +81,13 @@ function initGlobalKeyEventListener() {
 	//Checks if the SHIFT key is pressed
 	shiftDown = false;
 	$(document).on("keydown", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		if (key == 16) {
 			shiftDown = true;
 		}
 	});
 	$(document).on("keyup", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		if (key == 16) {
 			shiftDown = false;
 		}
@@ -96,13 +96,13 @@ function initGlobalKeyEventListener() {
 	//Checks if the TAB key is pressed
 	tabDown = false;
 	$(document).on("keydown", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		if (key == 9) {
 			tabDown = true;
 		}
 	});
 	$(document).on("keyup", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		if (key == 9) {
 			tabDown = false;
 		}
@@ -298,7 +298,7 @@ function initInputs() {
 
 	//Prevents user from entering non-numeric input
 	$("input.numeric-text").on("keydown", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		if (!isEditKeyEvent(event) && !isNumericKey(key, [], false)) { //Don't allow SHIFT key
 			event.preventDefault();
 		}
@@ -333,8 +333,8 @@ function initInputs() {
 	//Checks if key was delete, backspace, arrows, shift, ctrl, tab, home or end key
 	function isEditKeyEvent(event) {
 		if (ctrlDown) return true;
-		var key = event.keyCode || event.charCode;
-		if(key != 8 && key != 9 && key != 46 && key != 16 && key != 17 && key != 19 && (key < 35 || key > 40)) return false;
+		var key = event.which || event.keyCode;
+		if(key != 8 && key != 9 && key != 46 && key != 13 && key != 16 && key != 17 && key != 19 && (key < 35 || key > 40)) return false;
 		return true;
 	}
 
@@ -390,8 +390,8 @@ function initInputs() {
 	//Prevents user from entering non "tel characters"
 	$('input[type="tel"]').on("keydown", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		var key = event.keyCode || event.charCode;
-		if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 40, 41, 107, 109, 187, 189], true)) { //Don't remove characters: " ()+-", allow SHIFT key to be pressed
+		var key = event.which || event.keyCode;
+		if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 40, 41, 107, 109, 171, 187, 189], true)) { //Don't remove characters: " ()+-", allow SHIFT key to be pressed
 			event.preventDefault();
 		}
 	});
@@ -433,7 +433,7 @@ function initInputs() {
 	//Used to set the marker at the end of the prefilled input
 	//e.i country code for phone numbers
 	$(".prevent-select-on-tab").on("keyup", function(event)  {
- 		var key = event.keyCode || event.charCode;
+ 		var key = event.which || event.keyCode;
  		if (key == 9) {
  			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
  		}
@@ -469,7 +469,7 @@ function initInputs() {
 	//For dates
 	//Prevents non-numeric input
 	$("input.format-date").on("keydown", function() {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		//Prevent non numeric characters
 		if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 190], false)) { //Don't remove characters: " " and ".", don't allow SHIFT key
 				event.preventDefault();
@@ -505,7 +505,7 @@ function initInputs() {
 	//Prevents user from entering non-numeric in
 	//numeric inputs (possible in several browsers, e.g safari, firefox)
 	$("input.numeric-decimal").on("keydown", function(event) {
-		var key = event.keyCode || event.charCode;
+		var key = event.which || event.keyCode;
 		//Prevent non numeric characters
 		if (!isEditKeyEvent(event) && !isNumericKey(key, [188, 190], false)) {  //Don't remove characters: "," and ".", don't allow SHIFT key
 			event.preventDefault();
