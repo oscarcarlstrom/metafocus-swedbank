@@ -314,14 +314,12 @@ function initInputs() {
 	//Function used to insert a string at a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAt(indexStop, mask, $input, event) {
-		if ($input.val().charAt(indexStop - 1) == mask || $input.val().charAt(indexStop + 1)) return;
 		var selectionStart = parseInt($input.prop("selectionStart"));
 		if (event && event.key) {
 			$input.val($input.val().substring(0, indexStop) + mask + event.key + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
 			$input.prop("selectionStart", selectionStart + 2);
 			$input.prop("selectionEnd", selectionStart + 2);
 			event.preventDefault();
-			console.log("event.preventDefault()");
 		}
 		else {
 			$input.val($input.val().substring(0, indexStop) + mask + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
