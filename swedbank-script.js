@@ -293,7 +293,9 @@ function initInputs() {
 					newVal += c;
 				}
 			}
-			$input.val(newVal);
+			if (newVal != currentVal) {
+				$input.val(newVal);
+			}
 		}
 	}
 
@@ -315,8 +317,11 @@ function initInputs() {
 	//Function used to insert a string at a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAt(indexStop, mask, $input) {
-		if ($input.val().charAt(indexStop - 1) == mask) return;
+		if ($input.val().charAt(indexStop - 1) == mask || $input.val().charAt(indexStop + 1)) return;
+		var selectionStart = parseInt($input.prop("selectionStart"));
 		$input.val($input.val().substring(0, indexStop) + mask + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
+		$input.prop("selectionStart", selectionStart + 1);
+		$input.prop("selectionEnd", selectionStart + 1);
 	}
 
 	//Checks if key was delete, backspace, arrows, shift, ctrl, tab, home or end key
@@ -327,9 +332,13 @@ function initInputs() {
 		return true;
 	}
 
+	function reachedMaxValLength($element) {
+		return !$element.attr("maxlength") || $element.val().length < parseInt($element.attr("maxlength"));
+	}
+
 	//Function used to determine if a user is typing
 	function userIsTyping($element, event) {
-		return !isEditKeyEvent(event) && (!$element.attr("maxlength") || $element.val().length < parseInt($element.attr("maxlength")));
+		return !isEditKeyEvent(event) && reachedMaxValLength($element);
 	}
 
 	//Input masking for norwegian account numbers - regular input (keys)
@@ -339,9 +348,9 @@ function initInputs() {
 			var mask = " ";
 			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 	    	if(userIsTyping($(this), event)) {
-	    		var thisVal = $(this).val();
-				if (thisVal.length == 4 || thisVal.length == 7) {
-					maskAt(thisVal.length, mask, $(this));
+	    		var selectionStart = $(this).prop("selectionStart");
+				if (selectionStart == 4 || selectionStart == 7) {
+					maskAt(selectionStart, mask, $(this));
 				}
 	    	}
     	}
@@ -361,9 +370,9 @@ function initInputs() {
 				//Don't mess with value on delete,
 				//backspace, arrows, shift, ctrl, home or end key
 	    	if(userIsTyping($(this), event)) {
-	    		var thisVal = $(this).val();
-				if (thisVal.length == 5) {
-					maskAt(thisVal.length, " ", $(this));
+	    		var selectionStart = $(this).prop("selectionStart");
+				if (selectionStart == 5) {
+					maskAt(selectionStart, " ", $(this));
 				}
 	    	}
     	}
@@ -396,11 +405,11 @@ function initInputs() {
 			}
 
 			if(userIsTyping($(this), event)) {
-				var thisVal = $(this).val();
-				var index = thisVal.length - getSplitIndexForPhoneNumber(thisVal);
+				var selectionStart = $(this).prop("selectionStart");
+				var index = selectionStart - getSplitIndexForPhoneNumber($(this).val());
 
 				if (index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0)) {
-					maskAt(thisVal.length, " ", $(this));
+					maskAt(selectionStart, " ", $(this));
 				}
 			}
     	}
@@ -439,16 +448,16 @@ function initInputs() {
 		if(!browserIsIEOnWindowsPhone()) {
 			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 	    	if(userIsTyping($(this), event)) {
-	    		var thisVal = $(this).val();
-				if ((thisVal.length + 1) % 4 == 0) {
-					maskAt(thisVal.length, " ", $(this));
+				var selectionStart = $(this).prop("selectionStart");
+				if ((selectionStart + 1) % 4 == 0) {
+					maskAt(selectionStart, " ", $(this));
 				}
 	    	}
     	}
     });
 
-		//Sets the following format to the input: {000 000 000}
-		//on change or paste
+	//Sets the following format to the input: {000 000 000}
+	//on change or paste
     $(".pad-3-by-3").on("change paste", function() {
     	var $this = $(this);
     	setTimeout(function () {
@@ -457,60 +466,60 @@ function initInputs() {
     	}, 100);
     });
 
-		//For dates
-		//Sets the following format to the input: {dd.mm.yyyy}
-		//on change or paste
-		$("input.format-date").on("change paste", function() {
-			var $this = $(this);
-			setTimeout(function () {
-					clearNonNumericInput($this);
-					var formattedVal = formatAfterInput($this.val(), parseInt($this.attr("maxlength")), ".", function(i, x) { return i == 2 || i == 4; }, 2);
-					$this.val(formattedVal);
-			}, 100);
-		});
-		//For dates
-		//Clears non numeric unput on key released
-		$("input.format-date").on("keyup", function() {
-				clearNonNumericInput($(this));
-		});
-		//For dates
-		//Prevents non-numeric input and sets the following format: {dd.mm.yyyy}
-		//when a key is pressed (except "edit keys")
-		$("input.format-date").on("keydown", function() {
-			if(!browserIsIEOnWindowsPhone()) {
-					var key = event.keyCode || event.charCode;
-					//Prevent non numeric characters
-					if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 190], false)) { //Don't remove characters: " " and ".", don't allow SHIFT key
-							event.preventDefault();
-					}
-
-					//Don't mess with value on delete,
-					//backspace, arrows, shift, ctrl, home or end key
-					if (userIsTyping($(this), event) && key != 190) {
-							var thisVal = $(this).val();
-							if (thisVal.length == 2 || thisVal.length == 5) {
-									maskAt(thisVal.length, ".", $(this));
-							}
-					}
-			}
-		});
-
-		//Prevents user from entering non-numeric in
-		//numeric inputs (possible in several browsers, e.g safari, firefox)
-		$("input.numeric-decimal").on("keydown", function(event) {
+	//For dates
+	//Sets the following format to the input: {dd.mm.yyyy}
+	//on change or paste
+	$("input.format-date").on("change paste", function() {
+		var $this = $(this);
+		setTimeout(function () {
+				clearNonNumericInput($this);
+				var formattedVal = formatAfterInput($this.val(), parseInt($this.attr("maxlength")), ".", function(i, x) { return i == 2 || i == 4; }, 2);
+				$this.val(formattedVal);
+		}, 100);
+	});
+	//For dates
+	//Clears non numeric unput on key released
+	$("input.format-date").on("keyup", function() {
+			clearNonNumericInput($(this));
+	});
+	//For dates
+	//Prevents non-numeric input and sets the following format: {dd.mm.yyyy}
+	//when a key is pressed (except "edit keys")
+	$("input.format-date").on("keydown", function() {
+		if(!browserIsIEOnWindowsPhone()) {
 			var key = event.keyCode || event.charCode;
 			//Prevent non numeric characters
-			if (!isEditKeyEvent(event) && !isNumericKey(key, [188, 190], false)) {  //Don't remove characters: "," and ".", don't allow SHIFT key
-				event.preventDefault();
+			if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 190], false)) { //Don't remove characters: " " and ".", don't allow SHIFT key
+					event.preventDefault();
 			}
-		});
 
-		//Validates percentage according to min/max attributes.
-		//This one is added here and not in the validation() function
-		//because it is the only validation needed for benifital owners.
-		//Those are added added dynamically using AJAX which means
-		//that this parent function (initInputs) must be called again
-		//when a benifital owner is added
+			//Don't mess with value on delete,
+			//backspace, arrows, shift, ctrl, home or end key
+			if (userIsTyping($(this), event) && key != 190) {
+					var selectionStart = $(this).prop("selectionStart");
+					if (selectionStart == 2 || selectionStart == 5) {
+							maskAt(selectionStart, ".", $(this));
+					}
+			}
+		}
+	});
+
+	//Prevents user from entering non-numeric in
+	//numeric inputs (possible in several browsers, e.g safari, firefox)
+	$("input.numeric-decimal").on("keydown", function(event) {
+		var key = event.keyCode || event.charCode;
+		//Prevent non numeric characters
+		if (!isEditKeyEvent(event) && !isNumericKey(key, [188, 190], false)) {  //Don't remove characters: "," and ".", don't allow SHIFT key
+			event.preventDefault();
+		}
+	});
+
+	//Validates percentage according to min/max attributes.
+	//This one is added here and not in the validation() function
+	//because it is the only validation needed for benifital owners.
+	//Those are added added dynamically using AJAX which means
+	//that this parent function (initInputs) must be called again
+	//when a benifital owner is added
     $(".input-percentage").on("change paste", function() {
     	var val = parseFloat($(this).val());
     	var max = $(this).attr("max");
