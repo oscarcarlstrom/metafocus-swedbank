@@ -315,8 +315,12 @@ function initInputs() {
 	//Used when formatting input immediately when input is entered
 	function maskAt(indexStop, mask, $input, event) {
 		var selectionStart = parseInt($input.prop("selectionStart"));
+
+		var sliceBefore = $input.val().substring(0, indexStop);
+		var sliceAfter = $input.val().substring(indexStop, parseInt($input.attr("maxlength")));
+
 		if (event && event.key) {
-			$input.val($input.val().substring(0, indexStop) + mask + event.key + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
+			$input.val(sliceBefore + mask + event.key + sliceAfter);
 			$input.prop("selectionStart", selectionStart + 2);
 			$input.prop("selectionEnd", selectionStart + 2);
 			event.preventDefault();
@@ -452,17 +456,29 @@ function initInputs() {
 				maskAt(selectionStart, " ", $(this), event);
 			}
 		}
-  });
+	});
+
+	//Sets the following format to the input: {000 000 000}
+	//when a key is released
+	  $(".pad-3-by-3").on("keyup", function(event) {
+		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
+		if(!isEditKeyEvent(event)) {
+			var selectionStart = $(this).prop("selectionStart");
+			$(this).val(padBy(3, $(this).val(), $(this).attr("maxlength")));
+			$(this).prop("selectionStart", selectionStart);
+			$(this).prop("selectionEnd", selectionStart);
+		}
+	 });
 
 	//Sets the following format to the input: {000 000 000}
 	//on change or paste
-  $(".pad-3-by-3").on("change paste", function() {
-  	var $this = $(this);
-  	setTimeout(function () {
-		clearNonNumericInput($this, false);
-  		$this.val(padBy(3, $this.val(), $this.attr("maxlength")));
-  	}, 100);
-  });
+	  $(".pad-3-by-3").on("change paste", function() {
+		var $this = $(this);
+		setTimeout(function () {
+			clearNonNumericInput($this, false);
+			$this.val(padBy(3, $this.val(), $this.attr("maxlength")));
+		}, 100);
+	  });
 
 	//For dates
 	//Prevents non-numeric input
