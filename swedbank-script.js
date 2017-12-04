@@ -59,11 +59,6 @@ function preventBrowserFormActions() {
 	$("#frm").attr("novalidate", "novalidate");
 }
 
-//Detects if browser is IE on Windows phone
-function browserIsIEOnWindowsPhone() {
-	return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
-}
-
 //Initalizes event listeners
 //for the CTRL and TAB keys
 function initGlobalKeyEventListener() {
@@ -301,13 +296,6 @@ function initInputs() {
 		}
 	}
 
-	//To clear non numeric input
-	//when a key is released (incase the user somehow
-	//manged to sneek in a non numeric character)
-	$("input.numeric-text").on("keyup", function() {
-		clearNonNumericInput($(this), true, " ");
-	});
-
 	//Prevents user from entering non-numeric input
 	$("input.numeric-text").on("keydown", function(event) {
 		var key = event.keyCode || event.charCode;
@@ -316,14 +304,30 @@ function initInputs() {
 		}
 	});
 
+	//To clear non numeric input
+	//when a key is released (incase the user somehow
+	//manged to sneek in a non numeric character)
+	$("input.numeric-text").on("keyup", function() {
+		clearNonNumericInput($(this), true, " ");
+	});
+
 	//Function used to insert a string at a specific index
 	//Used when formatting input immediately when input is entered
-	function maskAt(indexStop, mask, $input) {
+	function maskAt(indexStop, mask, $input, event) {
 		if ($input.val().charAt(indexStop - 1) == mask || $input.val().charAt(indexStop + 1)) return;
 		var selectionStart = parseInt($input.prop("selectionStart"));
-		$input.val($input.val().substring(0, indexStop) + mask + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
-		$input.prop("selectionStart", selectionStart + 1);
-		$input.prop("selectionEnd", selectionStart + 1);
+		if (event && event.key) {
+			$input.val($input.val().substring(0, indexStop) + mask + event.key + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
+			$input.prop("selectionStart", selectionStart + 2);
+			$input.prop("selectionEnd", selectionStart + 2);
+			event.preventDefault();
+			console.log("event.preventDefault()");
+		}
+		else {
+			$input.val($input.val().substring(0, indexStop) + mask + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
+			$input.prop("selectionStart", selectionStart + 1);
+			$input.prop("selectionEnd", selectionStart + 1);
+		}
 	}
 
 	//Checks if key was delete, backspace, arrows, shift, ctrl, tab, home or end key
@@ -345,17 +349,14 @@ function initInputs() {
 
 	//Input masking for norwegian account numbers - regular input (keys)
 	//when a key is pressed (except "edit keys")
-	$("input.numeric-text.account-mask").on("keydown", function(event) {
-		if(!browserIsIEOnWindowsPhone()) {
-			var mask = " ";
-			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-	    	if(userIsTyping($(this), event)) {
-	    		var selectionStart = $(this).prop("selectionStart");
-				if (selectionStart == 4 || selectionStart == 7) {
-					maskAt(selectionStart, mask, $(this));
-				}
-	    	}
-    	}
+	$("input.numeric-text.account-mask").on("keypress", function(event) {
+		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
+		if(userIsTyping($(this), event)) {
+			var selectionStart = $(this).prop("selectionStart");
+			if (selectionStart == 4 || selectionStart == 7) {
+				maskAt(selectionStart, " ", $(this), event);
+			}
+		}
 	});
 	//Clears non numeric input and formats the number on paste or change
 	$("input.account-mask").on("change paste", function() {
@@ -367,17 +368,15 @@ function initInputs() {
     });
 
 	//Input masking for VPS account numbers - regular input (keys)
-	$("input.vps-account-mask").on("keydown", function(event) {
-		if(!browserIsIEOnWindowsPhone()) {
-				//Don't mess with value on delete,
-				//backspace, arrows, shift, ctrl, home or end key
-	    	if(userIsTyping($(this), event)) {
-	    		var selectionStart = $(this).prop("selectionStart");
-				if (selectionStart == 5) {
-					maskAt(selectionStart, " ", $(this));
-				}
-	    	}
-    	}
+	$("input.vps-account-mask").on("keypress", function(event) {
+		//Don't mess with value on delete,
+		//backspace, arrows, shift, ctrl, home or end key
+		if(userIsTyping($(this), event)) {
+			var selectionStart = $(this).prop("selectionStart");
+			if (selectionStart == 5) {
+				maskAt(selectionStart, " ", $(this), event);
+			}
+		}
 	});
 	//Clears non numeric input and formats the number on paste or change
   $("input.vps-account-mask").on("change paste", function() {
@@ -388,33 +387,34 @@ function initInputs() {
   	}, 100);
   });
 
-	//To clear non numeric input - except "+" "-" "(" and ")"
-	//when a key is released (incase the user somehow
-	//manged to sneek in a non numeric character)
-	$('input[type="tel"]').on("keyup", function() {
-		clearNonNumericInput($(this), true, "+-() ");
+	//Prevents user from entering non "tel characters"
+	$('input[type="tel"]').on("keydown", function(event) {
+		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
+		var key = event.keyCode || event.charCode;
+		if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 40, 41, 107, 109, 187, 189], true)) { //Don't remove characters: " ()+-", allow SHIFT key to be pressed
+			event.preventDefault();
+		}
 	});
 
 	//Input masking for phone numbers
 	//Sets the following format to the input: {000 00 000}
 	//when a key is pressed (except "edit keys")
-	$('input[type="tel"]').on("keydown", function(event) {
-		if(!browserIsIEOnWindowsPhone()) {
-			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-			var key = event.keyCode || event.charCode;
-			if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 40, 41, 107, 109, 187, 189], true)) { //Don't remove characters: " ()+-", allow SHIFT key to be pressed
-				event.preventDefault();
-			}
+	$('input[type="tel"]').on("keypress", function(event) {
+		if(userIsTyping($(this), event)) {
+			var selectionStart = $(this).prop("selectionStart");
+			var index = selectionStart - getSplitIndexForPhoneNumber($(this).val());
 
-			if(userIsTyping($(this), event)) {
-				var selectionStart = $(this).prop("selectionStart");
-				var index = selectionStart - getSplitIndexForPhoneNumber($(this).val());
-
-				if (index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0)) {
-					maskAt(selectionStart, " ", $(this));
-				}
+			if (index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0)) {
+				maskAt(selectionStart, " ", $(this), event);
 			}
-    	}
+		}
+	});
+
+	//To clear non numeric input - except "+" "-" "(" and ")"
+	//when a key is released (incase the user somehow
+	//manged to sneek in a non numeric character)
+	$('input[type="tel"]').on("keyup", function() {
+		clearNonNumericInput($(this), true, "+-() ");
 	});
 
 	//Sets the following format to the input: {000 00 000}
@@ -446,29 +446,51 @@ function initInputs() {
 
 	//Sets the following format to the input: {000 000 000}
 	//when a key is pressed (except "edit keys")
-	$(".pad-3-by-3").on("keydown", function(event) {
-		if(!browserIsIEOnWindowsPhone()) {
-			//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-	    	if(userIsTyping($(this), event)) {
-				var selectionStart = $(this).prop("selectionStart");
-				if ((selectionStart + 1) % 4 == 0) {
-					maskAt(selectionStart, " ", $(this));
-				}
-	    	}
-    	}
-    });
+	$(".pad-3-by-3").on("keypress", function(event) {
+		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
+		if(userIsTyping($(this), event)) {
+			var selectionStart = $(this).prop("selectionStart");
+			if ((selectionStart + 1) % 4 == 0) {
+				maskAt(selectionStart, " ", $(this), event);
+			}
+		}
+  });
 
 	//Sets the following format to the input: {000 000 000}
 	//on change or paste
-    $(".pad-3-by-3").on("change paste", function() {
-    	var $this = $(this);
-    	setTimeout(function () {
-			clearNonNumericInput($this, false);
-    		$this.val(padBy(3, $this.val(), $this.attr("maxlength")));
-    	}, 100);
-    });
+  $(".pad-3-by-3").on("change paste", function() {
+  	var $this = $(this);
+  	setTimeout(function () {
+		clearNonNumericInput($this, false);
+  		$this.val(padBy(3, $this.val(), $this.attr("maxlength")));
+  	}, 100);
+  });
 
 	//For dates
+	//Prevents non-numeric input
+	$("input.format-date").on("keydown", function() {
+		var key = event.keyCode || event.charCode;
+		//Prevent non numeric characters
+		if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 190], false)) { //Don't remove characters: " " and ".", don't allow SHIFT key
+				event.preventDefault();
+		}
+	});
+	//Sets the following format: {dd.mm.yyyy}
+	//when a key is pressed (except "edit keys")
+	$("input.format-date").on("keypress", function() {
+		//Don't mess with value on delete,
+		//backspace, arrows, shift, ctrl, home or end key
+		if (userIsTyping($(this), event) && key != 190) {
+				var selectionStart = $(this).prop("selectionStart");
+				if (selectionStart == 2 || selectionStart == 5) {
+					maskAt(selectionStart, ".", $(this), event);
+				}
+		}
+	});
+	//Clears non numeric unput on key released
+	$("input.format-date").on("keyup", function() {
+		clearNonNumericInput($(this), true);
+	});
 	//Sets the following format to the input: {dd.mm.yyyy}
 	//on change or paste
 	$("input.format-date").on("change paste", function() {
@@ -478,32 +500,6 @@ function initInputs() {
 				var formattedVal = formatAfterInput($this.val(), parseInt($this.attr("maxlength")), ".", function(i, x) { return i == 2 || i == 4; }, 2);
 				$this.val(formattedVal);
 		}, 100);
-	});
-	//For dates
-	//Clears non numeric unput on key released
-	$("input.format-date").on("keyup", function() {
-		clearNonNumericInput($(this), true);
-	});
-	//For dates
-	//Prevents non-numeric input and sets the following format: {dd.mm.yyyy}
-	//when a key is pressed (except "edit keys")
-	$("input.format-date").on("keydown", function() {
-		if(!browserIsIEOnWindowsPhone()) {
-			var key = event.keyCode || event.charCode;
-			//Prevent non numeric characters
-			if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 190], false)) { //Don't remove characters: " " and ".", don't allow SHIFT key
-					event.preventDefault();
-			}
-
-			//Don't mess with value on delete,
-			//backspace, arrows, shift, ctrl, home or end key
-			if (userIsTyping($(this), event) && key != 190) {
-					var selectionStart = $(this).prop("selectionStart");
-					if (selectionStart == 2 || selectionStart == 5) {
-							maskAt(selectionStart, ".", $(this));
-					}
-			}
-		}
 	});
 
 	//Prevents user from entering non-numeric in
