@@ -311,47 +311,72 @@ function initInputs() {
 		clearNonNumericInput($(this), true, " ");
 	});
 
-	//Function used to insert a string at a specific index
+	//Function used to insert a string BEFORE a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAtBefore(index, mask, $input, event) {
-		var selectionStart = parseInt($input.prop("selectionStart"));
-
-		var sliceBefore = $input.val().substring(0, index).trim();
-		var sliceAfter = $input.val().substring(index, parseInt($input.attr("maxlength"))).trim();
-
-		if (event && event.key) {
-			$input.val(sliceBefore + mask + event.key + sliceAfter);
-			$input.prop("selectionStart", selectionStart + 2);
-			$input.prop("selectionEnd", selectionStart + 2);
-			event.preventDefault();
-		}
-		else {
-			$input.val($input.val().substring(0, index) + mask + $input.val().substring(index, parseInt($input.attr("maxlength"))));
-			$input.prop("selectionStart", selectionStart + 1);
-			$input.prop("selectionEnd", selectionStart + 1);
-		}
-	}
-
-	//Function used to insert a string at a specific index
-	//Used when formatting input immediately when input is entered
-	function maskAtAfter(index, mask, $input, event) {
-		//We don't want the mask at the end
-		if (index >= parseInt($input.attr("maxlength"))) return;
-
 		var selectionStart = parseInt($input.prop("selectionStart"));
 
 		if (event && event.key) {
 			var sliceBefore = $input.val().substring(0, index).trim();
 			var sliceAfter = $input.val().substring(index, parseInt($input.attr("maxlength"))).trim();
 
-			$input.val(sliceBefore + event.key + mask + sliceAfter);
+			$input.val(sliceBefore + mask + event.key + sliceAfter);
 			$input.prop("selectionStart", selectionStart + 2);
 			$input.prop("selectionEnd", selectionStart + 2);
+
 			event.preventDefault();
 		}
 		else {
-			var sliceBefore = $input.val().substring(0, index + 1).trim();
-			var sliceAfter = $input.val().substring(index + 1, parseInt($input.attr("maxlength"))).trim();
+			var sliceBefore = $input.val().substring(0, index).trim();
+			var sliceAfter = $input.val().substring(index, parseInt($input.attr("maxlength"))).trim();
+
+			$input.val(sliceBefore + mask + sliceAfter);
+			$input.prop("selectionStart", selectionStart + 1);
+			$input.prop("selectionEnd", selectionStart + 1);
+		}
+	}
+
+	//Function used to insert a string AFTER a specific index
+	//Used when formatting input immediately when input is entered
+	function maskAtAfter(index, mask, $input, event) {
+		//We don't want the mask at the end
+		if (index >= parseInt($input.attr("maxlength"))) return;
+
+		var selectionStart = parseInt($input.prop("selectionStart"))
+
+		//Function used to calculate offset (incase sliceBefore
+		//contains any "mask")
+		var calcOffset = function(str) {
+			var offset = 0;
+			for(var i = 0; i < str.length; i++) {
+				if (str.charAt(i) == mask) offset++;
+			}
+			return offset;
+		}
+
+		if (event && event.key) {
+			//Incase the sliceBefore contains any masking characters, we need to
+			//increment an offset inorder for the formatting to work properly.
+			var offset = calcOffset($input.val().substring(0, index).trim());
+
+			//Set sliceBefore and sliceAfter with offset
+			var sliceBefore = $input.val().substring(0, index - offset).trim();
+			var sliceAfter = $input.val().substring(index - offset, parseInt($input.attr("maxlength"))).trim();
+
+			$input.val(sliceBefore + event.key + mask + sliceAfter);
+			$input.prop("selectionStart", selectionStart + 2);
+			$input.prop("selectionEnd", selectionStart + 2);
+
+			event.preventDefault();
+		}
+		else {
+			//Incase the sliceBefore contains any masking characters, we need to
+			//increment an offset inorder for the formatting to work properly.
+			var offset = calcOffset($input.val().substring(0, index + 1).trim());
+
+			//Set sliceBefore and sliceAfter with offset
+			var sliceBefore = $input.val().substring(0, index + 1 - offset).trim();
+			var sliceAfter = $input.val().substring(index + 1 - offset, parseInt($input.attr("maxlength"))).trim();
 
 			$input.val(sliceBefore + mask + sliceAfter);
 			$input.prop("selectionStart", selectionStart + 1);
