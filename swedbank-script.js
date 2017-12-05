@@ -316,8 +316,8 @@ function initInputs() {
 	function maskAt(indexStop, mask, $input, event) {
 		var selectionStart = parseInt($input.prop("selectionStart"));
 
-		var sliceBefore = $input.val().substring(0, indexStop);
-		var sliceAfter = $input.val().substring(indexStop, parseInt($input.attr("maxlength")));
+		var sliceBefore = $input.val().substring(0, indexStop).trim();
+		var sliceAfter = $input.val().substring(indexStop, parseInt($input.attr("maxlength"))).trim();
 
 		if (event && event.key) {
 			$input.val(sliceBefore + mask + event.key + sliceAfter);
@@ -457,18 +457,6 @@ function initInputs() {
 			}
 		}
 	});
-
-	//Sets the following format to the input: {000 000 000}
-	//when a key is released
-	  $(".pad-3-by-3").on("keyup", function(event) {
-		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(!isEditKeyEvent(event)) {
-			var selectionStart = $(this).prop("selectionStart");
-			$(this).val(padBy(3, $(this).val(), $(this).attr("maxlength")));
-			$(this).prop("selectionStart", selectionStart);
-			$(this).prop("selectionEnd", selectionStart);
-		}
-	 });
 
 	//Sets the following format to the input: {000 000 000}
 	//on change or paste
