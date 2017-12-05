@@ -311,6 +311,7 @@ function initInputs() {
 		clearNonNumericInput($(this), true, " ");
 	});
 
+	//!!!!! Assuming mask is only one character !!!!!
 	//Function used to insert a string BEFORE a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAtBefore(index, mask, $input, event) {
@@ -336,6 +337,7 @@ function initInputs() {
 		}
 	}
 
+	//!!!!! Assuming mask is only one character !!!!!
 	//Function used to insert a string AFTER a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAtAfter(index, mask, $input, event) {
@@ -381,6 +383,48 @@ function initInputs() {
 			$input.val(sliceBefore + mask + sliceAfter);
 			$input.prop("selectionStart", selectionStart + 1);
 			$input.prop("selectionEnd", selectionStart + 1);
+		}
+	}
+
+	//!!!!! Assuming mask is only one character !!!!!
+	function preventMaskDelete($input, event, mask, maskAt) {
+		var key = event.which || event.keyCode;
+		var selectionStart = parseInt($input.prop("selectionStart"));
+		var selectionEnd = parseInt($input.prop("selectionEnd"));
+		var maxlength = parseInt($input.attr("maxlength"));
+
+		if (selectionStart > 0) {
+			//Prevent delete when selection range = 0
+			if (selectionStart == selectionEnd && selectionEnd < maxlength) {
+				//if delete OR backspace -> preventDefault
+				if (maskAt(selectionStart) &&
+						$input.val().substring(selectionStart, selectionStart + 1) == mask &&
+						$input.val().substring(selectionStart - 1, selectionStart) != mask &&
+						$input.val().substring(selectionStart + 1, selectionStart + 2) != mask &&
+						isDeleteKey(event)
+					) {
+							event.preventDefault();
+							$input.prop("selectionStart", selectionStart + mask.length);
+							$input.prop("selectionEnd", selectionStart + mask.length);
+				}
+				else if(maskAt(selectionStart - mask.length) &&
+						$input.val().substring(selectionStart - 1, selectionStart) == mask &&
+						$input.val().substring(selectionStart - 2, selectionStart - 1) != mask &&
+						$input.val().substring(selectionStart, selectionStart + 1) != mask &&
+						isBackspaceKey(event)
+					) {
+							event.preventDefault();
+							$input.prop("selectionStart", selectionStart - mask.length);
+							$input.prop("selectionEnd", selectionStart - mask.length);
+				}
+			}
+			//If mask is the first character in the
+			//selection range (i.e highlighted)
+			else if (maskAt(selectionStart)) {
+				if (!isEditKeyEvent(event)) {
+					$input.prop("selectionStart", selectionStart + mask.length);
+				}
+			}
 		}
 	}
 
@@ -516,44 +560,9 @@ function initInputs() {
 		}
  	});
 
-	function preventMaskDelete($input, event, mask, maskAt) {
-		var key = event.which || event.keyCode;
-		var selectionStart = parseInt($input.prop("selectionStart"));
-		var selectionEnd = parseInt($input.prop("selectionEnd"));
-		var maxlength = parseInt($input.attr("maxlength"));
-
-		if (selectionStart == selectionEnd &&
-				selectionStart > 0 &&
-				selectionEnd < maxlength
-			) {
-			//if delete OR backspace -> preventDefault
-			if (maskAt(selectionStart) &&
-					$input.val().substring(selectionStart, selectionStart + 1) == mask &&
-					$input.val().substring(selectionStart - 1, selectionStart) != mask &&
-					$input.val().substring(selectionStart + 1, selectionStart + 2) != mask &&
-					isDeleteKey(event)
-				) {
-						event.preventDefault();
-						$input.prop("selectionStart", selectionStart + 1);
-						$input.prop("selectionEnd", selectionStart + 1);
-			}
-			else if(maskAt(selectionStart - 1) &&
-					$input.val().substring(selectionStart - 1, selectionStart) == mask &&
-					$input.val().substring(selectionStart - 2, selectionStart - 1) != mask &&
-					$input.val().substring(selectionStart, selectionStart + 1) != mask &&
-					isBackspaceKey(event)
-				) {
-						event.preventDefault();
-						$input.prop("selectionStart", selectionStart - 1);
-						$input.prop("selectionEnd", selectionStart - 1);
-			}
-		}
-	}
-
 	var maskAtPadBy3 = function (selectionStart) {
 		return (selectionStart + 1) % 4 == 0;
 	}
-
 	//Prevents user from delete masking
 	$(".pad-3-by-3").on("keydown", function(event) {
 		preventMaskDelete($(this), event, " ", maskAtPadBy3);
