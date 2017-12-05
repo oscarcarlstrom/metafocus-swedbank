@@ -332,6 +332,26 @@ function initInputs() {
 		}
 	}
 
+	function isDeleteKey(event) {
+		var key = event.which || event.keyCode;
+		//Check if key is delete
+		if(key == 46) {
+			console.log("Delete key was pressed!");
+			return true;
+    }
+		return false;
+	}
+
+	function isBackspaceKey(event) {
+		var key = event.which || event.keyCode;
+		//Check if key is backspace
+		if(key == 8) {
+			console.log("Backspace key was pressed!");
+			return true;
+		}
+		return false;
+	}
+
 	//Checks if key was delete, backspace, arrows, shift, ctrl, tab, home or end key
 	function isEditKeyEvent(event) {
 		if (ctrlDown) return true;
@@ -446,13 +466,55 @@ function initInputs() {
 		}
  	});
 
+	function preventMaskDelete($input, event, mask, maskAt) {
+		var key = event.which || event.keyCode;
+		var selectionStart = parseInt($input.prop("selectionStart"));
+		var selectionEnd = parseInt($input.prop("selectionEnd"));
+		var maxlength = parseInt($input.attr("maxlength"));
+
+		if (selectionStart == selectionEnd &&
+				selectionStart > 0 &&
+				selectionEnd < maxlength
+			) {
+			//if delete OR backspace -> preventDefault
+			if (maskAt(selectionStart) &&
+					$input.val().substring(selectionStart, selectionStart + 1) == mask &&
+					$input.val().substring(selectionStart - 1, selectionStart) != mask &&
+					$input.val().substring(selectionStart + 1, selectionStart + 2) != mask &&
+					isDeleteKey(event)
+				) {
+						event.preventDefault();
+						$input.prop("selectionStart", selectionStart + 1);
+						$input.prop("selectionEnd", selectionStart + 1);
+			}
+			else if(maskAt(selectionStart - 1) &&
+					$input.val().substring(selectionStart - 1, selectionStart) == mask &&
+					$input.val().substring(selectionStart - 2, selectionStart - 1) != mask &&
+					$input.val().substring(selectionStart, selectionStart + 1) != mask &&
+					isBackspaceKey(event)
+				) {
+						event.preventDefault();
+						$input.prop("selectionStart", selectionStart - 1);
+						$input.prop("selectionEnd", selectionStart - 1);
+			}
+		}
+	}
+
+	var maskAtPadBy3 = function (selectionStart) {
+		return (selectionStart + 1) % 4 == 0;
+	}
+	//Prevents user from delete masking
+	$(".pad-3-by-3").on("keydown", function(event) {
+		preventMaskDelete($(this), event, " ", maskAtPadBy3);
+	});
+
 	//Sets the following format to the input: {000 000 000}
 	//when a key is pressed (except "edit keys")
 	$(".pad-3-by-3").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 		if(userIsTyping($(this), event)) {
 			var selectionStart = $(this).prop("selectionStart");
-			if ((selectionStart + 1) % 4 == 0) {
+			if (maskAtPadBy3(selectionStart)) {
 				maskAt(selectionStart, " ", $(this), event);
 			}
 		}
