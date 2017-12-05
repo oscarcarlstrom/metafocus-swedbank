@@ -363,7 +363,6 @@ function initInputs() {
 		var key = event.which || event.keyCode;
 		//Check if key is delete
 		if(key == 46) {
-			console.log("Delete key was pressed!");
 			return true;
     }
 		return false;
@@ -373,7 +372,6 @@ function initInputs() {
 		var key = event.which || event.keyCode;
 		//Check if key is backspace
 		if(key == 8) {
-			console.log("Backspace key was pressed!");
 			return true;
 		}
 		return false;
@@ -383,7 +381,7 @@ function initInputs() {
 	function isEditKeyEvent(event) {
 		if (ctrlDown) return true;
 		var key = event.which || event.keyCode;
-		if(key != 8 && key != 9 && key != 46 && key != 13 && key != 16 && key != 17 && key != 19 && (key < 35 || key > 40)) return false;
+		if(!isBackspaceKey(event) && key != 9 && !isDeleteKey(event) && key != 13 && key != 16 && key != 17 && key != 19 && (key < 35 || key > 40)) return false;
 		return true;
 	}
 
