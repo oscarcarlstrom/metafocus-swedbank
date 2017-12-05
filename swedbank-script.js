@@ -313,11 +313,11 @@ function initInputs() {
 
 	//Function used to insert a string at a specific index
 	//Used when formatting input immediately when input is entered
-	function maskAt(indexStop, mask, $input, event) {
+	function maskAtBefore(index, mask, $input, event) {
 		var selectionStart = parseInt($input.prop("selectionStart"));
 
-		var sliceBefore = $input.val().substring(0, indexStop).trim();
-		var sliceAfter = $input.val().substring(indexStop, parseInt($input.attr("maxlength"))).trim();
+		var sliceBefore = $input.val().substring(0, index).trim();
+		var sliceAfter = $input.val().substring(index, parseInt($input.attr("maxlength"))).trim();
 
 		if (event && event.key) {
 			$input.val(sliceBefore + mask + event.key + sliceAfter);
@@ -326,7 +326,34 @@ function initInputs() {
 			event.preventDefault();
 		}
 		else {
-			$input.val($input.val().substring(0, indexStop) + mask + $input.val().substring(indexStop, parseInt($input.attr("maxlength"))));
+			$input.val($input.val().substring(0, index) + mask + $input.val().substring(index, parseInt($input.attr("maxlength"))));
+			$input.prop("selectionStart", selectionStart + 1);
+			$input.prop("selectionEnd", selectionStart + 1);
+		}
+	}
+
+	//Function used to insert a string at a specific index
+	//Used when formatting input immediately when input is entered
+	function maskAtAfter(index, mask, $input, event) {
+		//We don't want the mask at the end
+		if (index >= parseInt($input.attr("maxlength"))) return;
+
+		var selectionStart = parseInt($input.prop("selectionStart"));
+
+		if (event && event.key) {
+			var sliceBefore = $input.val().substring(0, index).trim();
+			var sliceAfter = $input.val().substring(index, parseInt($input.attr("maxlength"))).trim();
+
+			$input.val(sliceBefore + event.key + mask + sliceAfter);
+			$input.prop("selectionStart", selectionStart + 2);
+			$input.prop("selectionEnd", selectionStart + 2);
+			event.preventDefault();
+		}
+		else {
+			var sliceBefore = $input.val().substring(0, index + 1).trim();
+			var sliceAfter = $input.val().substring(index + 1, parseInt($input.attr("maxlength"))).trim();
+
+			$input.val(sliceBefore + mask + sliceAfter);
 			$input.prop("selectionStart", selectionStart + 1);
 			$input.prop("selectionEnd", selectionStart + 1);
 		}
@@ -376,7 +403,7 @@ function initInputs() {
 		if(userIsTyping($(this), event)) {
 			var selectionStart = $(this).prop("selectionStart");
 			if (selectionStart == 4 || selectionStart == 7) {
-				maskAt(selectionStart, " ", $(this), event);
+				maskAtBefore(selectionStart, " ", $(this), event);
 			}
 		}
 	});
@@ -396,7 +423,7 @@ function initInputs() {
 		if(userIsTyping($(this), event)) {
 			var selectionStart = $(this).prop("selectionStart");
 			if (selectionStart == 5) {
-				maskAt(selectionStart, " ", $(this), event);
+				maskAtBefore(selectionStart, " ", $(this), event);
 			}
 		}
 	});
@@ -427,7 +454,7 @@ function initInputs() {
 			var index = selectionStart - getSplitIndexForPhoneNumber($(this).val());
 
 			if (index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0)) {
-				maskAt(selectionStart, " ", $(this), event);
+				maskAtBefore(selectionStart, " ", $(this), event);
 			}
 		}
 	});
@@ -503,6 +530,7 @@ function initInputs() {
 	var maskAtPadBy3 = function (selectionStart) {
 		return (selectionStart + 1) % 4 == 0;
 	}
+
 	//Prevents user from delete masking
 	$(".pad-3-by-3").on("keydown", function(event) {
 		preventMaskDelete($(this), event, " ", maskAtPadBy3);
@@ -513,9 +541,14 @@ function initInputs() {
 	$(".pad-3-by-3").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 		if(userIsTyping($(this), event)) {
-			var selectionStart = $(this).prop("selectionStart");
-			if (maskAtPadBy3(selectionStart)) {
-				maskAt(selectionStart, " ", $(this), event);
+			var selectionStart = parseInt($(this).prop("selectionStart"))
+			var maskAfterIndex = selectionStart + 1;
+			var maskBeforeIndex = selectionStart;
+			if (maskAtPadBy3(maskAfterIndex)) {
+				maskAtAfter(maskAfterIndex, " ", $(this), event);
+			}
+			else if (maskAtPadBy3(maskBeforeIndex)) {
+				maskAtBefore(maskAfterIndex, " ", $(this), event);
 			}
 		}
 	});
@@ -547,7 +580,7 @@ function initInputs() {
 		if (userIsTyping($(this), event) && key != 190) {
 				var selectionStart = $(this).prop("selectionStart");
 				if (selectionStart == 2 || selectionStart == 5) {
-					maskAt(selectionStart, ".", $(this), event);
+					maskAtBefore(selectionStart, ".", $(this), event);
 				}
 		}
 	});
