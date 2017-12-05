@@ -397,7 +397,7 @@ function initInputs() {
 			//Prevent delete when selection range = 0
 			if (selectionStart == selectionEnd && selectionEnd < maxlength) {
 				//if delete OR backspace -> preventDefault
-				if (maskAt(selectionStart) &&
+				if (maskAt(selectionStart, $input) &&
 						$input.val().substring(selectionStart, selectionStart + 1) == mask &&
 						$input.val().substring(selectionStart - 1, selectionStart) != mask &&
 						$input.val().substring(selectionStart + 1, selectionStart + 2) != mask &&
@@ -407,7 +407,7 @@ function initInputs() {
 							$input.prop("selectionStart", selectionStart + mask.length);
 							$input.prop("selectionEnd", selectionStart + mask.length);
 				}
-				else if(maskAt(selectionStart - mask.length) &&
+				else if(maskAt(selectionStart - mask.length, $input) &&
 						$input.val().substring(selectionStart - 1, selectionStart) == mask &&
 						$input.val().substring(selectionStart - 2, selectionStart - 1) != mask &&
 						$input.val().substring(selectionStart, selectionStart + 1) != mask &&
@@ -418,11 +418,18 @@ function initInputs() {
 							$input.prop("selectionEnd", selectionStart - mask.length);
 				}
 			}
-			//If mask is the first character in the
+			//If mask is the FIRST character in the
 			//selection range (i.e highlighted)
-			else if (maskAt(selectionStart)) {
+			else if (maskAt(selectionStart, $input)) {
 				if (!isEditKeyEvent(event)) {
 					$input.prop("selectionStart", selectionStart + mask.length);
+				}
+			}
+			//If mask is the LAST character in the
+			//selection range (i.e highlighted)
+			else if (maskAt(selectionEnd - mask.length, $input)) {
+				if (!isEditKeyEvent(event)) {
+					$input.prop("selectionEnd", selectionEnd - mask.length);
 				}
 			}
 		}
@@ -463,17 +470,35 @@ function initInputs() {
 		return !isEditKeyEvent(event) && reachedMaxValLength($element);
 	}
 
+	//Function used to determine the mask index from
+	//class "account-mask" (used in the event bindings below)
+	var maskAtAccountMask = function (selectionStart) {
+		return selectionStart == 4 || selectionStart == 7;
+	}
+	//Prevents user from delete masking
+	$("input.account-mask").on("keydown", function(event) {
+		preventMaskDelete($(this), event, " ", maskAtAccountMask);
+	});
+
 	//Input masking for norwegian account numbers - regular input (keys)
 	//when a key is pressed (except "edit keys")
-	$("input.numeric-text.account-mask").on("keypress", function(event) {
+	$("input.account-mask").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 		if(userIsTyping($(this), event)) {
 			var selectionStart = $(this).prop("selectionStart");
-			if (selectionStart == 4 || selectionStart == 7) {
-				maskAtBefore(selectionStart, " ", $(this), event);
+
+			var maskAfterIndex = selectionStart + 1;
+			var maskBeforeIndex = selectionStart;
+
+			if (maskAtAccountMask(maskAfterIndex)) {
+				maskAtAfter(maskAfterIndex, " ", $(this), event);
+			}
+			else if (maskAtAccountMask(maskBeforeIndex)) {
+				maskAtBefore(maskBeforeIndex, " ", $(this), event);
 			}
 		}
 	});
+
 	//Clears non numeric input and formats the number on paste or change
 	$("input.account-mask").on("change paste", function() {
     	var $this = $(this);
@@ -481,16 +506,32 @@ function initInputs() {
 				clearNonNumericInput($this, false);
 	    	$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 4 || i == 6; }, 0));
     	}, 100);
-    });
+  });
+
+	//Function used to determine the mask index from
+	//class "vps-account-mask" (used in the event bindings below)
+	var maskAtVPSAccountMask = function (selectionStart) {
+		return selectionStart == 5;
+	}
+	//Prevents user from delete masking
+	$("input.vps-account-mask").on("keydown", function(event) {
+		preventMaskDelete($(this), event, " ", maskAtVPSAccountMask);
+	});
 
 	//Input masking for VPS account numbers - regular input (keys)
 	$("input.vps-account-mask").on("keypress", function(event) {
-		//Don't mess with value on delete,
-		//backspace, arrows, shift, ctrl, home or end key
+		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 		if(userIsTyping($(this), event)) {
 			var selectionStart = $(this).prop("selectionStart");
-			if (selectionStart == 5) {
-				maskAtBefore(selectionStart, " ", $(this), event);
+
+			var maskAfterIndex = selectionStart + 1;
+			var maskBeforeIndex = selectionStart;
+
+			if (maskAtVPSAccountMask(maskAfterIndex)) {
+				maskAtAfter(maskAfterIndex, " ", $(this), event);
+			}
+			else if (maskAtVPSAccountMask(maskBeforeIndex)) {
+				maskAtBefore(maskBeforeIndex, " ", $(this), event);
 			}
 		}
 	});
@@ -512,16 +553,33 @@ function initInputs() {
 		}
 	});
 
+	//Function used to determine the mask index for
+	//"input[type="tel"]" (used in the event bindings below)
+	var maskAtTel = function (selectionStart, $input) {
+		var index = selectionStart - getSplitIndexForPhoneNumber($input.val());
+		return index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0);
+	}
+	//Prevents user from delete masking
+	$('input[type="tel"]').on("keydown", function(event) {
+		preventMaskDelete($(this), event, " ", maskAtTel);
+	});
+
 	//Input masking for phone numbers
 	//Sets the following format to the input: {000 00 000}
 	//when a key is pressed (except "edit keys")
 	$('input[type="tel"]').on("keypress", function(event) {
+		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 		if(userIsTyping($(this), event)) {
 			var selectionStart = $(this).prop("selectionStart");
-			var index = selectionStart - getSplitIndexForPhoneNumber($(this).val());
 
-			if (index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0)) {
-				maskAtBefore(selectionStart, " ", $(this), event);
+			var maskAfterIndex = selectionStart + 1;
+			var maskBeforeIndex = selectionStart;
+
+			if (maskAtTel(maskAfterIndex, $(this))) {
+				//maskAtAfter(maskAfterIndex, " ", $(this), event);
+			}
+			else if (maskAtTel(maskBeforeIndex, $(this))) {
+				maskAtBefore(maskBeforeIndex, " ", $(this), event);
 			}
 		}
 	});
@@ -560,34 +618,37 @@ function initInputs() {
 		}
  	});
 
+	//Function used to determine the mask index from
+	//class "pad-3-by-3" (used in the event bindings below)
 	var maskAtPadBy3 = function (selectionStart) {
 		return (selectionStart + 1) % 4 == 0;
 	}
 	//Prevents user from delete masking
-	$(".pad-3-by-3").on("keydown", function(event) {
+	$("input.pad-3-by-3").on("keydown", function(event) {
 		preventMaskDelete($(this), event, " ", maskAtPadBy3);
 	});
 
 	//Sets the following format to the input: {000 000 000}
 	//when a key is pressed (except "edit keys")
-	$(".pad-3-by-3").on("keypress", function(event) {
+	$("input.pad-3-by-3").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 		if(userIsTyping($(this), event)) {
 			var selectionStart = parseInt($(this).prop("selectionStart"))
 			var maskAfterIndex = selectionStart + 1;
 			var maskBeforeIndex = selectionStart;
+
 			if (maskAtPadBy3(maskAfterIndex)) {
 				maskAtAfter(maskAfterIndex, " ", $(this), event);
 			}
 			else if (maskAtPadBy3(maskBeforeIndex)) {
-				maskAtBefore(maskAfterIndex, " ", $(this), event);
+				maskAtBefore(maskBeforeIndex, " ", $(this), event);
 			}
 		}
 	});
 
 	//Sets the following format to the input: {000 000 000}
 	//on change or paste
-	  $(".pad-3-by-3").on("change paste", function() {
+	  $("input.pad-3-by-3").on("change paste", function() {
 		var $this = $(this);
 		setTimeout(function () {
 			clearNonNumericInput($this, false);
