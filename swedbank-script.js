@@ -315,37 +315,50 @@ function initInputs() {
 	//Function used to insert a string BEFORE a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAtBefore(index, mask, $input, event) {
-		//We don't want the mask at the end
-		if (index >= parseInt($input.attr("maxlength"))) return;
+		var maxlength = parseInt($input.attr("maxlength"));
 
 		var selectionStart = parseInt($input.prop("selectionStart"));
+		var selectionEnd = parseInt($input.prop("selectionEnd"));
+
+		//We don't want the mask at the end
+		//Or if max val is reached AND selection range == 0 (nothing will be deleted)
+		if (index >= maxlength || selectionEnd == selectionStart && reachedMaxValLength($input)) return;
+
+		var val = $input.val();
+
+		//If mask already exists at index:
+		//Bubble existing masks to the left of index (if any)
+		if (val.charAt(index) == mask)  {
+			if (val.substring(index, val.length).indexOf(mask) > -1) {
+				val = bubbleMaskLeft(val, mask, index + 1);
+			}
+		}
 
 		if (event && event.key) {
-			var sliceBefore = $input.val().substring(0, index).trim();
-			var sliceAfter = $input.val().substring(index, parseInt($input.attr("maxlength"))).trim();
+			var sliceBefore = val.substring(0, index).trim();
+			var sliceAfter = val.substring(index, maxlength).trim();
 
-			$input.val(sliceBefore + mask + event.key + sliceAfter);
+			$input.val((sliceBefore + mask + event.key + sliceAfter).substring(0, maxlength));
 			$input.prop("selectionStart", selectionStart + 2);
 			$input.prop("selectionEnd", selectionStart + 2);
 
 			event.preventDefault();
 		}
 		else {
-			var sliceBefore = $input.val().substring(0, index).trim();
-			var sliceAfter = $input.val().substring(index, parseInt($input.attr("maxlength"))).trim();
+			var sliceBefore = val.substring(0, index).trim();
+			var sliceAfter = val.substring(index, maxlength).trim();
 
-			$input.val(sliceBefore + mask + sliceAfter);
+			$input.val((sliceBefore + mask + sliceAfter).substring(0, maxlength));
 			$input.prop("selectionStart", selectionStart + 1);
 			$input.prop("selectionEnd", selectionStart + 1);
 		}
 	}
 
 	//Bubbles the mask on step to the right
-	function bubbleMaskLeft(val, mask) {
+	function bubbleMaskLeft(val, mask, bubbleFromIndex) {
 		var newVal = "";
 		for(var i = 0; i < val.length; i++) {
-			if (val.charAt(i) == mask) {
-				//TODO:
+			if (val.charAt(i) == mask && i >= bubbleFromIndex) {
 				newVal = newVal.substring(0, i - 1) + mask + newVal.substring(i - 1, i);
 			}
 			else {
@@ -362,9 +375,11 @@ function initInputs() {
 		var selectionStart = parseInt($input.prop("selectionStart"));
 		var selectionEnd = parseInt($input.prop("selectionEnd"));
 
-		var maxlength = parseInt($input.attr("maxlength"))
+		var maxlength = parseInt($input.attr("maxlength"));
+
 		//We don't want the mask at the end
-		if (index >= maxlength) return;
+		//Or if max val is reached AND selection range == 0 (nothing will be deleted)
+		if (index >= maxlength || selectionEnd == selectionStart && reachedMaxValLength($input)) return;
 
 		var val = $input.val();
 
@@ -387,13 +402,13 @@ function initInputs() {
 		var removeExistingMask = function() {
 			//Remove existing mask (if any)
 			if (val.charAt(index) == mask)  {
-				val = val.substring(0, index) + val.substring(index + 1, val.length);
+				val = val.substring(0, index) + val.substring(index + mask.length, val.length);
 				index--;
 
 				//If any other masks to the left of "index":
 				//Bubble left, and shift the mask one position to the left
 				if (val.substring(index, val.length).indexOf(mask) > -1) {
-					val = bubbleMaskLeft(val, mask);
+					val = bubbleMaskLeft(val, mask, index);
 				}
 			}
 		}
@@ -510,12 +525,12 @@ function initInputs() {
 	}
 
 	function reachedMaxValLength($element) {
-		return !$element.attr("maxlength") || $element.val().length < parseInt($element.attr("maxlength"));
+		return !$element.attr("maxlength") || $element.val().length >= parseInt($element.attr("maxlength"));
 	}
 
 	//Function used to determine if a user is typing
 	function userIsTyping($element, event) {
-		return !isEditKeyEvent(event) && reachedMaxValLength($element);
+		return !isEditKeyEvent(event) && !reachedMaxValLength($element);
 	}
 
 	//Function used to determine the mask index from
@@ -698,7 +713,9 @@ function initInputs() {
 				maskAtBefore(maskBeforeIndex, maskForPadBy3, $(this), event);
 			}
 			else if (!reachedMaxValLength($(this))) {
-				//$(this).val(bubbleMaskLeft($(this).val(), maskForPadBy3));
+				//TODO: bubble from the NEXT maskIndex
+				console.log("bubbling: " + bubbleMaskLeft($(this).val(), maskForPadBy3, selectionStart)))
+				//$(this).val((.substring(0, parseInt($(this).attr("maxlength"))));
 			}
 		}
 	});
