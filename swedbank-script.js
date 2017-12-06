@@ -315,6 +315,9 @@ function initInputs() {
 	//Function used to insert a string BEFORE a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAtBefore(index, mask, $input, event) {
+		//We don't want the mask at the end
+		if (index >= parseInt($input.attr("maxlength"))) return;
+
 		var selectionStart = parseInt($input.prop("selectionStart"));
 
 		if (event && event.key) {
@@ -337,14 +340,38 @@ function initInputs() {
 		}
 	}
 
+	//Bubbles the mask on step to the right
+	function bubbleMaskLeft(val, mask) {
+		var newVal = "";
+		for(var i = 0; i < val.length; i++) {
+			if (val.charAt(i) == mask) {
+				//TODO:
+				newVal = newVal.substring(0, i - 1) + mask + newVal.substring(i - 1, i);
+			}
+			else {
+				newVal += val.charAt(i);
+			}
+		}
+		return newVal;
+	}
+
 	//!!!!! Assuming mask is only one character !!!!!
 	//Function used to insert a string AFTER a specific index
 	//Used when formatting input immediately when input is entered
 	function maskAtAfter(index, mask, $input, event) {
-		//We don't want the mask at the end
-		if (index >= parseInt($input.attr("maxlength"))) return;
+		var selectionStart = parseInt($input.prop("selectionStart"));
+		var selectionEnd = parseInt($input.prop("selectionEnd"));
 
-		var selectionStart = parseInt($input.prop("selectionStart"))
+		var maxlength = parseInt($input.attr("maxlength"))
+		//We don't want the mask at the end
+		if (index >= maxlength) return;
+
+		var val = $input.val();
+
+		//Remove selection
+		if (selectionStart < selectionEnd) {
+			val = val.substring(0, selectionStart) + val.substring(selectionEnd, val.length);
+		}
 
 		//Function used to calculate offset (incase sliceBefore
 		//contains any "mask")
@@ -356,16 +383,34 @@ function initInputs() {
 			return offset;
 		}
 
+		//Removes existing mask(s) (if any)
+		var removeExistingMask = function() {
+			//Remove existing mask (if any)
+			if (val.charAt(index) == mask)  {
+				val = val.substring(0, index) + val.substring(index + 1, val.length);
+				index--;
+
+				//If any other masks to the left of "index":
+				//Bubble left, and shift the mask one position to the left
+				if (val.substring(index, val.length).indexOf(mask) > -1) {
+					val = bubbleMaskLeft(val, mask);
+				}
+			}
+		}
+
 		if (event && event.key) {
 			//Incase the sliceBefore contains any masking characters, we need to
 			//increment an offset inorder for the formatting to work properly.
-			var offset = calcOffset($input.val().substring(0, index).trim());
+			var offset = selectionEnd > index ? calcOffset(val) : 0;
+
+			//Remove existing mask (if any)
+			removeExistingMask();
 
 			//Set sliceBefore and sliceAfter with offset
-			var sliceBefore = $input.val().substring(0, index - offset).trim();
-			var sliceAfter = $input.val().substring(index - offset, parseInt($input.attr("maxlength"))).trim();
+			var sliceBefore = val.substring(0, index - offset).trim();
+			var sliceAfter = val.substring(index - offset, maxlength).trim();
 
-			$input.val(sliceBefore + event.key + mask + sliceAfter);
+			$input.val((sliceBefore + event.key + mask + sliceAfter).substring(0, maxlength));
 			$input.prop("selectionStart", selectionStart + 2);
 			$input.prop("selectionEnd", selectionStart + 2);
 
@@ -374,13 +419,16 @@ function initInputs() {
 		else {
 			//Incase the sliceBefore contains any masking characters, we need to
 			//increment an offset inorder for the formatting to work properly.
-			var offset = calcOffset($input.val().substring(0, index + 1).trim());
+			var offset = selectionEnd > index ? calcOffset(val) : 0;
+
+			//Remove existing mask (if any)
+			removeExistingMask();
 
 			//Set sliceBefore and sliceAfter with offset
-			var sliceBefore = $input.val().substring(0, index + 1 - offset).trim();
-			var sliceAfter = $input.val().substring(index + 1 - offset, parseInt($input.attr("maxlength"))).trim();
+			var sliceBefore = val.substring(0, index + 1 - offset).trim();
+			var sliceAfter = val.substring(index + 1 - offset, maxlength).trim();
 
-			$input.val(sliceBefore + mask + sliceAfter);
+			$input.val((sliceBefore + mask + sliceAfter).substring(0, maxlength));
 			$input.prop("selectionStart", selectionStart + 1);
 			$input.prop("selectionEnd", selectionStart + 1);
 		}
@@ -484,7 +532,7 @@ function initInputs() {
 	//when a key is pressed (except "edit keys")
 	$("input.account-mask").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(userIsTyping($(this), event)) {
+		if(!isEditKeyEvent(event)) {
 			var selectionStart = $(this).prop("selectionStart");
 
 			var maskAfterIndex = selectionStart + 1;
@@ -521,7 +569,7 @@ function initInputs() {
 	//Input masking for VPS account numbers - regular input (keys)
 	$("input.vps-account-mask").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(userIsTyping($(this), event)) {
+		if(!isEditKeyEvent(event)) {
 			var selectionStart = $(this).prop("selectionStart");
 
 			var maskAfterIndex = selectionStart + 1;
@@ -569,7 +617,7 @@ function initInputs() {
 	//when a key is pressed (except "edit keys")
 	$('input[type="tel"]').on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(userIsTyping($(this), event)) {
+		if(!isEditKeyEvent(event)) {
 			var selectionStart = $(this).prop("selectionStart");
 
 			var maskAfterIndex = selectionStart + 1;
@@ -618,30 +666,39 @@ function initInputs() {
 		}
  	});
 
+
 	//Function used to determine the mask index from
 	//class "pad-3-by-3" (used in the event bindings below)
 	var maskAtPadBy3 = function (selectionStart) {
 		return (selectionStart + 1) % 4 == 0;
 	}
+
+	//The mask string used for class "pad-3-by-3"
+	//(used in the event bindings below)
+	var maskForPadBy3 = " ";
+
 	//Prevents user from delete masking
 	$("input.pad-3-by-3").on("keydown", function(event) {
-		preventMaskDelete($(this), event, " ", maskAtPadBy3);
+		preventMaskDelete($(this), event, maskForPadBy3, maskAtPadBy3);
 	});
 
 	//Sets the following format to the input: {000 000 000}
 	//when a key is pressed (except "edit keys")
 	$("input.pad-3-by-3").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(userIsTyping($(this), event)) {
+		if(!isEditKeyEvent(event)) {
 			var selectionStart = parseInt($(this).prop("selectionStart"))
 			var maskAfterIndex = selectionStart + 1;
 			var maskBeforeIndex = selectionStart;
 
 			if (maskAtPadBy3(maskAfterIndex)) {
-				maskAtAfter(maskAfterIndex, " ", $(this), event);
+				maskAtAfter(maskAfterIndex, maskForPadBy3, $(this), event);
 			}
 			else if (maskAtPadBy3(maskBeforeIndex)) {
-				maskAtBefore(maskBeforeIndex, " ", $(this), event);
+				maskAtBefore(maskBeforeIndex, maskForPadBy3, $(this), event);
+			}
+			else if (!reachedMaxValLength($(this))) {
+				//$(this).val(bubbleMaskLeft($(this).val(), maskForPadBy3));
 			}
 		}
 	});
@@ -670,7 +727,7 @@ function initInputs() {
 	$("input.format-date").on("keypress", function() {
 		//Don't mess with value on delete,
 		//backspace, arrows, shift, ctrl, home or end key
-		if (userIsTyping($(this), event) && key != 190) {
+		if (!isEditKeyEvent(event) && key != 190) {
 				var selectionStart = $(this).prop("selectionStart");
 				if (selectionStart == 2 || selectionStart == 5) {
 					maskAtBefore(selectionStart, ".", $(this), event);
