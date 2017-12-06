@@ -311,6 +311,35 @@ function initInputs() {
 		clearNonNumericInput($(this), true, " ");
 	});
 
+	//Bubbles the mask on step to the left
+	function bubbleMaskRight(val, mask, bubbleFromIndex) {
+		var newVal = "";
+		for(var i = 0; i < val.length; i++) {
+			if (val.charAt(i + 1) == mask && i >= bubbleFromIndex) {
+				console.log("At least trying!");
+				newVal = newVal.substring(0, i + 1) + val.charAt(i + 2) + mask;
+			}
+			else if (val.charAt(i) != mask) {
+				newVal += val.charAt(i);
+			}
+		}
+		return newVal;
+	}
+
+	//Bubbles the mask on step to the right
+	function bubbleMaskLeft(val, mask, bubbleFromIndex) {
+		var newVal = "";
+		for(var i = 0; i < val.length; i++) {
+			if (val.charAt(i) == mask && i >= bubbleFromIndex) {
+				newVal = newVal.substring(0, i - 1) + mask + newVal.substring(i - 1, i);
+			}
+			else {
+				newVal += val.charAt(i);
+			}
+		}
+		return newVal;
+	}
+
 	//!!!!! Assuming mask is only one character !!!!!
 	//Function used to insert a string BEFORE a specific index
 	//Used when formatting input immediately when input is entered
@@ -352,20 +381,6 @@ function initInputs() {
 			$input.prop("selectionStart", selectionStart + 1);
 			$input.prop("selectionEnd", selectionStart + 1);
 		}
-	}
-
-	//Bubbles the mask on step to the right
-	function bubbleMaskLeft(val, mask, bubbleFromIndex) {
-		var newVal = "";
-		for(var i = 0; i < val.length; i++) {
-			if (val.charAt(i) == mask && i >= bubbleFromIndex) {
-				newVal = newVal.substring(0, i - 1) + mask + newVal.substring(i - 1, i);
-			}
-			else {
-				newVal += val.charAt(i);
-			}
-		}
-		return newVal;
 	}
 
 	//!!!!! Assuming mask is only one character !!!!!
@@ -702,7 +717,8 @@ function initInputs() {
 	$("input.pad-3-by-3").on("keypress", function(event) {
 		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
 		if(!isEditKeyEvent(event)) {
-			var selectionStart = parseInt($(this).prop("selectionStart"))
+			var selectionStart = parseInt($(this).prop("selectionStart"));
+			var selectionEnd = parseInt($(this).prop("selectionEnd"));
 			var maskAfterIndex = selectionStart + 1;
 			var maskBeforeIndex = selectionStart;
 
@@ -712,10 +728,14 @@ function initInputs() {
 			else if (maskAtPadBy3(maskBeforeIndex)) {
 				maskAtBefore(maskBeforeIndex, maskForPadBy3, $(this), event);
 			}
-			else if (!reachedMaxValLength($(this))) {
+			else if (!reachedMaxValLength($(this)) &&
+				selectionEnd == selectionStart && !reachedMaxValLength($(this))) {
 				//TODO: bubble from the NEXT maskIndex
-				console.log("bubbling: " + bubbleMaskLeft($(this).val(), maskForPadBy3, selectionStart)))
-				//$(this).val((.substring(0, parseInt($(this).attr("maxlength"))));
+				var newVal = bubbleMaskRight($(this).val(), maskForPadBy3, selectionStart).substring(0, parseInt($(this).attr("maxlength")));
+				console.log("bubbling: " + newVal);
+				//$(this).val(newVal);
+				//$(this).prop("selectionStart", selectionStart);
+				//$(this).prop("selectionEnd", selectionStart);
 			}
 		}
 	});
