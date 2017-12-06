@@ -311,6 +311,7 @@ function initInputs() {
 		clearNonNumericInput($(this), true, " ");
 	});
 
+	//TODO
 	//Bubbles the mask on step to the left
 	function bubbleMaskRight(val, mask, bubbleFromIndex) {
 		var newVal = "";
