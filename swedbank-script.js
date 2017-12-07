@@ -311,22 +311,6 @@ function initInputs() {
 		clearNonNumericInput($(this), true, " ");
 	});
 
-	//TODO
-	//Bubbles the mask on step to the left
-	function bubbleMaskRight(val, mask, bubbleFromIndex) {
-		var newVal = "";
-		for(var i = 0; i < val.length; i++) {
-			if (val.charAt(i + 1) == mask && i >= bubbleFromIndex) {
-				console.log("At least trying!");
-				newVal = newVal.substring(0, i + 1) + val.charAt(i + 2) + mask;
-			}
-			else if (val.charAt(i) != mask) {
-				newVal += val.charAt(i);
-			}
-		}
-		return newVal;
-	}
-
 	//Bubbles the mask on step to the right
 	function bubbleMaskLeft(val, mask, bubbleFromIndex) {
 		var newVal = "";
@@ -708,6 +692,35 @@ function initInputs() {
 	//(used in the event bindings below)
 	var maskForPadBy3 = " ";
 
+	//TODO: test this function
+	var maskForPadBy3MustBubble = function (selectionStart, val) {
+		if (maskAtPadBy3(selectionStart)) return false;
+		if (val.length == selectionStart) return false;
+
+		var precedingMasks = 0;
+		for(var i = 0; i < selectionStart; i++) {
+			if (val.charAt(i) == maskForPadBy3) {
+				precedingMasks++;
+			}
+		}
+
+		var bulkSize = 3;
+		var offset = selectionStart % bulkSize;
+		var start = selectionStart - offset + precedingMasks;
+
+		var charsInBulk = 0;
+		for(var i = start; !maskAtPadBy3(i) ; i++) {
+			if (val.charAt(i) == maskForPadBy3) {
+				charsInBulk = 0;
+			}
+			else {
+				charsInBulk++;
+			}
+		}
+
+		return charsInBulk == bulkSize;
+	}
+
 	//Prevents user from delete masking
 	$("input.pad-3-by-3").on("keydown", function(event) {
 		preventMaskDelete($(this), event, maskForPadBy3, maskAtPadBy3);
@@ -730,13 +743,25 @@ function initInputs() {
 				maskAtBefore(maskBeforeIndex, maskForPadBy3, $(this), event);
 			}
 			else if (!reachedMaxValLength($(this)) &&
-				selectionEnd == selectionStart && !reachedMaxValLength($(this))) {
-				//TODO: bubble from the NEXT maskIndex
-				var newVal = bubbleMaskRight($(this).val(), maskForPadBy3, selectionStart).substring(0, parseInt($(this).attr("maxlength")));
-				console.log("bubbling: " + newVal);
-				//$(this).val(newVal);
-				//$(this).prop("selectionStart", selectionStart);
-				//$(this).prop("selectionEnd", selectionStart);
+				selectionEnd == selectionStart &&
+				maskForPadBy3MustBubble(selectionStart, $(this).val())) {
+				var newVal = bubbleMaskLeft($(this).val(), maskForPadBy3, selectionStart).substring(0, parseInt($(this).attr("maxlength")));
+				$(this).val(newVal);
+				$(this).prop("selectionStart", selectionStart);
+				$(this).prop("selectionEnd", selectionStart);
+			}
+		}
+	});
+
+	$("input.pad-3-by-3").on("keyup", function(event) {
+		if(!isEditKeyEvent(event)) {
+			var selectionStart = parseInt($(this).prop("selectionStart"));
+
+			if (!reachedMaxValLength($(this)) &&
+				maskForPadBy3MustBubble(selectionStart, $(this).val())) {
+					$(this).val(padBy(3, $(this).val(), $(this).attr("maxlength")));
+					$(this).prop("selectionStart", selectionStart);
+					$(this).prop("selectionEnd", selectionStart);
 			}
 		}
 	});
