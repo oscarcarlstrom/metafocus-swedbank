@@ -263,34 +263,16 @@ function initInputs() {
 	$("input.numeric-text").attr("pattern", "[0-9]*"); //iOS
 	$("input.numeric-text").attr("inputmode", "numeric"); //Android
 
-	//Sets a mask for the account numbers
+	//Sets a mask for some classes:
+	$("input.numeric-text.no-mask").mask('0#');
+
 	$("input.account-mask").mask("0000 00 00000");
 
-	//Prevents user from delete masking
 	$("input.vps-account-mask").mask("00000 0000000");
 
-	//TODO TEL
+	$("input.org-number-mask").mask("000 000 000");
 
-	//Used to set the marker at the end of the prefilled input
-	//e.i country code for phone numbers
-	/*$(".prevent-select-on-tab").on("keyup", function(event)  {
- 		var key = event.which || event.keyCode;
- 		if (key == 9) {
- 			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
- 		}
- 	});
-	$(".prevent-select-on-tab").on("focus", function(event)  {
-		if (tabDown || $(this).prop("selectionStart") != $(this).prop("selectionEnd")) {
-			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
-		}
- 	});*/
-
-	//Prevents user from delete masking
-	$("input.pad-3-by-3").mask("000 000 000");
-
-	//For dates
-	//Prevents non-numeric input
-	$("input.format-date").mask("00.00.0000")
+	$("input.date-mask").mask("00.00.0000")
 
 	//Checks if keyCode is numeric
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
@@ -347,19 +329,33 @@ function initInputs() {
 	//Those are added added dynamically using AJAX which means
 	//that this parent function (initInputs) must be called again
 	//when a benifital owner is added
-    $(".input-percentage").on("change paste", function() {
-    	var val = parseFloat($(this).val());
-    	var max = $(this).attr("max");
-    	var min = $(this).attr("min");
+  $(".input-percentage").on("change paste", function() {
+  	var val = parseFloat($(this).val());
+  	var max = $(this).attr("max");
+  	var min = $(this).attr("min");
 
-    	if(val <= max && val >= min) {
-    		$(this).parent().parent().siblings("input[type=hidden]").val("true");
-    	}
-    	else {
-    		$(this).parent().parent().siblings("input[type=hidden]").val("false");
-    	}
-    	$(this).val(val.toString());
-    });
+  	if(val <= max && val >= min) {
+  		$(this).parent().parent().siblings("input[type=hidden]").val("true");
+  	}
+  	else {
+  		$(this).parent().parent().siblings("input[type=hidden]").val("false");
+  	}
+  	$(this).val(val.toString());
+  });
+
+	//Used to set the marker at the end of the prefilled input
+	//e.i country code for phone numbers
+	$(".prevent-select-on-tab").on("keyup", function(event)  {
+ 		var key = event.which || event.keyCode;
+ 		if (key == 9) {
+ 			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
+ 		}
+ 	});
+	$(".prevent-select-on-tab").on("focus", function(event)  {
+		if (tabDown || $(this).prop("selectionStart") != $(this).prop("selectionEnd")) {
+			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
+		}
+ 	});
 }
 
 //Inits all form controls
@@ -884,6 +880,18 @@ function autoFillCountryCallingCode() {
 				$.each($phoneInputs, function() {
 					var val = $(this).val()
 					var splitIndex = getSplitIndexForPhoneNumber(val);
+
+					var maskStart = "(+";
+					for(var i = 0; i < result.callingCodes[0].length; i++) {
+						maskStart += "0";
+					}
+					maskStart += ") ";
+
+					console.log("maskStart: " + maskStart);
+
+					$(this).unmask();
+					$(this).mask(maskStart + "000 00 000 000 000 000 0");
+
 					if (val.length == 0 || splitIndex == val.length) { //When input is empty
 						$(this).val("(+" + result.callingCodes[0] + ") ");
 					}
@@ -1176,7 +1184,7 @@ function validation() {
 		}
 	}
 
-	var $socialSecurityNumberNoInputs = $("input.numeric-text.input-social-security-number-no");
+	var $socialSecurityNumberNoInputs = $("input.input-social-security-number-no");
 	$socialSecurityNumberNoInputs.on("change", function() {
 		validateSocialSecurityNumberNo($(this));
 	});
