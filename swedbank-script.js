@@ -862,49 +862,57 @@ function autoFillPostalCode() {
 	});
 }
 
-function maskTelsWithCountryCode($phoneInput, callingCode) {
+//Calculates the start of the mask for phonenumbers: (+COUNTRY_CODE)
+function getMaskStart(callingCode) {
 	var maskStart = "(+";
 	for(var i = 0; i < callingCode.length; i++) {
 		maskStart += "0";
 	}
-	maskStart += ") ";
+	return maskStart += ") ";
+}
 
-	console.log("maskStart: " + maskStart);
+//Masks phonenumbers
+function maskTelsWithCountryCode($phoneInput, callingCode) {
+	var maskStart = getMaskStart(callingCode);
 
 	$phoneInput.unmask();
 
+	//If the country code is changed
+	//We need to update the mask
 	var options =  {
 		onKeyPress: function(val, e, $field, options) {
-			console.log(val);
-			//if (val.indexOf(")") < 0) {
+			if (val.indexOf("(") < 0) {
 				var valUnmasked = $field.cleanVal();
 				var foundmatchingCode = false;
-				for (var i = 1; i < valUnmasked.length && !foundmatchingCode; i++) {
-					var newCallingCode = valUnmasked.substring(0, i);
-					$.getJSON("https://restcountries.eu/rest/v2/callingcode/" + callingCode, function(result){
-						console.log("in get");
-						if (result.status != 400 && result.status != 404 && result.callingCodes) {
+
+				//Check if any of the leading digits matches a country code
+				for (var i = 0; i < valUnmasked.length && !foundmatchingCode; i++) {
+					var newCallingCode = valUnmasked.substring(0, i + 1);
+
+					//Look for country code in the API provided by restcountries.eu
+					$.getJSON("https://restcountries.eu/rest/v2/callingcode/" + newCallingCode, function(result){
+
+						if (result.status != 400 && result.status != 404) {
+							//Update mask if we find a match
 							foundmatchingCode = true;
-							maskTelsWithCountryCode($field, newCallingCode);
+							var newMaskStart = getMaskStart(newCallingCode);
+							$field.mask(newMaskStart + "000 00 000 000 000 000 0", options);
 							$field.val(val, options);
 						}
 					});
 				}
-				if (val.indexOf(")") < 0 && !foundmatchingCode) {
-					$field.mask("+00 000 00 000 000 000 000 0");
-					$field.val(val, options);
-				}
-			//}
-			//else if (val.indexOf("(") > -1) {
-				//$field.mask("(+00) 000 00 000 000 000 000 0");
-				//$field.val(val, options);
-			//}
+			} //Update mask when user removes country code
+			else if (val.indexOf(")") < 0) {
+				$field.mask("+(00 000 00 000 000 000 000 0", options);
+				$field.val(val);
+			}
 	}};
 
+	//Set mask for the phone input
 	$phoneInput.mask(maskStart + "000 00 000 000 000 000 0", options);
 }
 
-//Auto fills the country calling code using the api provided by restcountries.eu
+//Auto fills the country calling code using the API provided by restcountries.eu
 function autoFillCountryCallingCode() {
 	var setCountryCode = function($selects) {
 		if(!$selects.length) return;
