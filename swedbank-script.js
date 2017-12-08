@@ -266,7 +266,7 @@ function initInputs() {
 	//Sets a mask for some classes:
 	$("input.numeric-text.no-mask").mask('0#');
 
-	$('input[type="tel"]').mask("(+099999) 000 00 000 000 00 000 00");
+	$('input[type="tel"]').mask("+099999 000 00 000 000 00 000 00");
 
 	$("input.account-mask").mask("0000 00 00000");
 
@@ -881,14 +881,13 @@ function autoFillCountryCallingCode() {
 
 					$.each($phoneInputs, function() {
 						var val = $(this).val()
-						var splitIndex = getSplitIndexForPhoneNumber(val);
 
-						if (val.length == 0 || splitIndex == val.length) { //When input is empty
-							$(this).val("(+" + result.callingCodes[0] + ") ");
-						}
-						else { //TODO - KAN FJERNES ETTER TESTING!
-							//$(this).val("(+" + result.callingCodes[0] + ") " + val.substring(splitIndex, val.length));
-							console.log("Skipping auto fill of country code. Value is: " + $(this).val() + " result returned by API is " + result.callingCodes[0] + " splitIndex is: " + splitIndex + " val.length is : " + val.length);
+						var valSplit = val.split(" ");
+						var replaceCurrentCode = valSplit.length <= 2 && (valSplit.length == 2 ? valSplit.pop() == "" : true);
+
+						//When input is empty or only country code is entered
+						if (val.length == 0 || replaceCurrentCode) {
+							$(this).val("+" + result.callingCodes[0] + " ");
 						}
 					});
 				}
