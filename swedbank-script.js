@@ -862,6 +862,48 @@ function autoFillPostalCode() {
 	});
 }
 
+function maskTelsWithCountryCode($phoneInput, callingCode) {
+	var maskStart = "(+";
+	for(var i = 0; i < callingCode.length; i++) {
+		maskStart += "0";
+	}
+	maskStart += ") ";
+
+	console.log("maskStart: " + maskStart);
+
+	$phoneInput.unmask();
+
+	var options =  {
+		onKeyPress: function(val, e, $field, options) {
+			console.log(val);
+			//if (val.indexOf(")") < 0) {
+				var valUnmasked = $field.cleanVal();
+				var foundmatchingCode = false;
+				for (var i = 1; i < valUnmasked.length && !foundmatchingCode; i++) {
+					var newCallingCode = valUnmasked.substring(0, i);
+					$.getJSON("https://restcountries.eu/rest/v2/callingcode/" + callingCode, function(result){
+						console.log("in get");
+						if (result.status != 400 && result.status != 404 && result.callingCodes) {
+							foundmatchingCode = true;
+							maskTelsWithCountryCode($field, newCallingCode);
+							$field.val(val, options);
+						}
+					});
+				}
+				if (val.indexOf(")") < 0 && !foundmatchingCode) {
+					$field.mask("+00 000 00 000 000 000 000 0");
+					$field.val(val, options);
+				}
+			//}
+			//else if (val.indexOf("(") > -1) {
+				//$field.mask("(+00) 000 00 000 000 000 000 0");
+				//$field.val(val, options);
+			//}
+	}};
+
+	$phoneInput.mask(maskStart + "000 00 000 000 000 000 0", options);
+}
+
 //Auto fills the country calling code using the api provided by restcountries.eu
 function autoFillCountryCallingCode() {
 	var setCountryCode = function($selects) {
@@ -872,34 +914,26 @@ function autoFillCountryCallingCode() {
 			var code = $sel.val().toLowerCase();
 
 			$.getJSON("https://restcountries.eu/rest/v2/alpha/" + code, function(result){
+				if (result.status != 400 && result.status != 404) {
+					//Prepend country code to all phone inputs in  the current input-panel
+					var $formGroup = $sel.closest(".form-group");
+					var $phoneInputs = $formGroup.find('input[type="tel"]');
 
-				//Prepend country code to all phone inputs in  the current input-panel
-				var $formGroup = $sel.closest(".form-group");
-				var $phoneInputs = $formGroup.find('input[type="tel"]');
+					$.each($phoneInputs, function() {
+						var val = $(this).val()
+						var splitIndex = getSplitIndexForPhoneNumber(val);
 
-				$.each($phoneInputs, function() {
-					var val = $(this).val()
-					var splitIndex = getSplitIndexForPhoneNumber(val);
+						maskTelsWithCountryCode($(this), result.callingCodes[0]);
 
-					var maskStart = "(+";
-					for(var i = 0; i < result.callingCodes[0].length; i++) {
-						maskStart += "0";
-					}
-					maskStart += ") ";
-
-					console.log("maskStart: " + maskStart);
-
-					$(this).unmask();
-					$(this).mask(maskStart + "000 00 000 000 000 000 0");
-
-					if (val.length == 0 || splitIndex == val.length) { //When input is empty
-						$(this).val("(+" + result.callingCodes[0] + ") ");
-					}
-					else { //TODO - KAN FJERNES ETTER TESTING!
-						//$(this).val("(+" + result.callingCodes[0] + ") " + val.substring(splitIndex, val.length));
-						console.log("Skipping auto fill of country code. Value is: " + $(this).val() + " result returned by API is " + result.callingCodes[0] + " splitIndex is: " + splitIndex + " val.length is : " + val.length);
-					}
-				});
+						if (val.length == 0 || splitIndex == val.length) { //When input is empty
+							$(this).val("(+" + result.callingCodes[0] + ") ");
+						}
+						else { //TODO - KAN FJERNES ETTER TESTING!
+							//$(this).val("(+" + result.callingCodes[0] + ") " + val.substring(splitIndex, val.length));
+							console.log("Skipping auto fill of country code. Value is: " + $(this).val() + " result returned by API is " + result.callingCodes[0] + " splitIndex is: " + splitIndex + " val.length is : " + val.length);
+						}
+					});
+				}
 			});
 		});
 	};
