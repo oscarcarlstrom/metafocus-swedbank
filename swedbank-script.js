@@ -266,13 +266,15 @@ function initInputs() {
 	//Sets a mask for some classes:
 	$("input.numeric-text.no-mask").mask('0#');
 
+	$('input[type="tel"]').mask("(+099999) 000 00 000 000 00 000 00");
+
 	$("input.account-mask").mask("0000 00 00000");
 
 	$("input.vps-account-mask").mask("00000 0000000");
 
 	$("input.org-number-mask").mask("000 000 000");
 
-	$("input.date-mask").mask("00.00.0000")
+	$("input.date-mask").mask("00.00.0000");
 
 	//Checks if keyCode is numeric
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
@@ -862,56 +864,6 @@ function autoFillPostalCode() {
 	});
 }
 
-//Calculates the start of the mask for phonenumbers: (+COUNTRY_CODE)
-function getMaskStart(callingCode) {
-	var maskStart = "(+";
-	for(var i = 0; i < callingCode.length; i++) {
-		maskStart += "0";
-	}
-	return maskStart += ") ";
-}
-
-//Masks phonenumbers
-function maskTelsWithCountryCode($phoneInput, callingCode) {
-	var maskStart = getMaskStart(callingCode);
-
-	$phoneInput.unmask();
-
-	//If the country code is changed
-	//We need to update the mask
-	var options =  {
-		onKeyPress: function(val, e, $field, options) {
-			if (val.indexOf("(") < 0) {
-				var valUnmasked = $field.cleanVal();
-				var foundmatchingCode = false;
-
-				//Check if any of the leading digits matches a country code
-				for (var i = 0; i < valUnmasked.length && !foundmatchingCode; i++) {
-					var newCallingCode = valUnmasked.substring(0, i + 1);
-
-					//Look for country code in the API provided by restcountries.eu
-					$.getJSON("https://restcountries.eu/rest/v2/callingcode/" + newCallingCode, function(result){
-
-						if (result.status != 400 && result.status != 404) {
-							//Update mask if we find a match
-							foundmatchingCode = true;
-							var newMaskStart = getMaskStart(newCallingCode);
-							$field.mask(newMaskStart + "000 00 000 000 000 000 0", options);
-							$field.val(val, options);
-						}
-					});
-				}
-			} //Update mask when user removes country code
-			else if (val.indexOf(")") < 0) {
-				$field.mask("+(00 000 00 000 000 000 000 0", options);
-				$field.val(val);
-			}
-	}};
-
-	//Set mask for the phone input
-	$phoneInput.mask(maskStart + "000 00 000 000 000 000 0", options);
-}
-
 //Auto fills the country calling code using the API provided by restcountries.eu
 function autoFillCountryCallingCode() {
 	var setCountryCode = function($selects) {
@@ -930,8 +882,6 @@ function autoFillCountryCallingCode() {
 					$.each($phoneInputs, function() {
 						var val = $(this).val()
 						var splitIndex = getSplitIndexForPhoneNumber(val);
-
-						maskTelsWithCountryCode($(this), result.callingCodes[0]);
 
 						if (val.length == 0 || splitIndex == val.length) { //When input is empty
 							$(this).val("(+" + result.callingCodes[0] + ") ");
