@@ -263,6 +263,35 @@ function initInputs() {
 	$("input.numeric-text").attr("pattern", "[0-9]*"); //iOS
 	$("input.numeric-text").attr("inputmode", "numeric"); //Android
 
+	//Sets a mask for the account numbers
+	$("input.account-mask").mask("0000 00 00000");
+
+	//Prevents user from delete masking
+	$("input.vps-account-mask").mask("00000 0000000");
+
+	//TODO TEL
+
+	//Used to set the marker at the end of the prefilled input
+	//e.i country code for phone numbers
+	/*$(".prevent-select-on-tab").on("keyup", function(event)  {
+ 		var key = event.which || event.keyCode;
+ 		if (key == 9) {
+ 			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
+ 		}
+ 	});
+	$(".prevent-select-on-tab").on("focus", function(event)  {
+		if (tabDown || $(this).prop("selectionStart") != $(this).prop("selectionEnd")) {
+			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
+		}
+ 	});*/
+
+	//Prevents user from delete masking
+	$("input.pad-3-by-3").mask("000 000 000");
+
+	//For dates
+	//Prevents non-numeric input
+	$("input.format-date").mask("00.00.0000")
+
 	//Checks if keyCode is numeric
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
 	//allowShift makes an exception to allow the SHIFT key to be pressed (e.i for phone numbers)
@@ -275,239 +304,16 @@ function initInputs() {
 		return false;
 	}
 
-	//Clears all non-numeric input from the input field
-	//Skips characters defined by the string "exceptions"
-	var clearNonNumericInput = function($input, updateSelectionRange, exceptions) {
-		var currentVal = $input.val();
-		var newVal = "";
-		for(var i = 0 ; i < currentVal.length; i++) {
-			var c = currentVal.charAt(i);
-			if ($.isNumeric(c) || (exceptions != undefined && exceptions.indexOf(c) > -1)) {
-				newVal += c;
-			}
-		}
-		if (newVal != currentVal) {
-			var selectionStart = parseInt($input.prop("selectionStart"));
-			$input.val(newVal);
-			if (updateSelectionRange) {
-				$input.prop("selectionStart", selectionStart - 1);
-				$input.prop("selectionEnd", selectionStart - 1);
-			}
-		}
-	}
-
-	//Prevents user from entering non-numeric input
-	$("input.numeric-text").on("keydown", function(event) {
-		var key = event.which || event.keyCode;
-		if (!isEditKeyEvent(event) && !isNumericKey(key, [], false)) { //Don't allow SHIFT key
-			event.preventDefault();
-		}
-	});
-
-	//To clear non numeric input
-	//when a key is released (incase the user somehow
-	//manged to sneek in a non numeric character)
-	$("input.numeric-text").on("keyup", function() {
-		clearNonNumericInput($(this), true, " ");
-	});
-
-	//Bubbles the mask on step to the right
-	function bubbleMaskLeft(val, mask, bubbleFromIndex) {
-		var newVal = "";
-		for(var i = 0; i < val.length; i++) {
-			if (val.charAt(i) == mask && i >= bubbleFromIndex) {
-				newVal = newVal.substring(0, i - 1) + mask + newVal.substring(i - 1, i);
-			}
-			else {
-				newVal += val.charAt(i);
-			}
-		}
-		return newVal;
-	}
-
-	//!!!!! Assuming mask is only one character !!!!!
-	//Function used to insert a string BEFORE a specific index
-	//Used when formatting input immediately when input is entered
-	function maskAtBefore(index, mask, $input, event) {
-		var maxlength = parseInt($input.attr("maxlength"));
-
-		var selectionStart = parseInt($input.prop("selectionStart"));
-		var selectionEnd = parseInt($input.prop("selectionEnd"));
-
-		//We don't want the mask at the end
-		//Or if max val is reached AND selection range == 0 (nothing will be deleted)
-		if (index >= maxlength || selectionEnd == selectionStart && reachedMaxValLength($input)) return;
-
-		var val = $input.val();
-
-		//If mask already exists at index:
-		//Bubble existing masks to the left of index (if any)
-		if (val.charAt(index) == mask)  {
-			if (val.substring(index, val.length).indexOf(mask) > -1) {
-				val = bubbleMaskLeft(val, mask, index + 1);
-			}
-		}
-
-		if (event && event.key) {
-			var sliceBefore = val.substring(0, index).trim();
-			var sliceAfter = val.substring(index, maxlength).trim();
-
-			$input.val((sliceBefore + mask + event.key + sliceAfter).substring(0, maxlength));
-			$input.prop("selectionStart", selectionStart + 2);
-			$input.prop("selectionEnd", selectionStart + 2);
-
-			event.preventDefault();
-		}
-		else {
-			var sliceBefore = val.substring(0, index).trim();
-			var sliceAfter = val.substring(index, maxlength).trim();
-
-			$input.val((sliceBefore + mask + sliceAfter).substring(0, maxlength));
-			$input.prop("selectionStart", selectionStart + 1);
-			$input.prop("selectionEnd", selectionStart + 1);
-		}
-	}
-
-	//!!!!! Assuming mask is only one character !!!!!
-	//Function used to insert a string AFTER a specific index
-	//Used when formatting input immediately when input is entered
-	function maskAtAfter(index, mask, $input, event) {
-		var selectionStart = parseInt($input.prop("selectionStart"));
-		var selectionEnd = parseInt($input.prop("selectionEnd"));
-
-		var maxlength = parseInt($input.attr("maxlength"));
-
-		//We don't want the mask at the end
-		//Or if max val is reached AND selection range == 0 (nothing will be deleted)
-		if (index >= maxlength || selectionEnd == selectionStart && reachedMaxValLength($input)) return;
-
-		var val = $input.val();
-
-		//Remove selection
-		if (selectionStart < selectionEnd) {
-			val = val.substring(0, selectionStart) + val.substring(selectionEnd, val.length);
-		}
-
-		//Function used to calculate offset (incase sliceBefore
-		//contains any "mask")
-		var calcOffset = function(str) {
-			var offset = 0;
-			for(var i = 0; i < str.length; i++) {
-				if (str.charAt(i) == mask) offset++;
-			}
-			return offset;
-		}
-
-		//Removes existing mask(s) (if any)
-		var removeExistingMask = function() {
-			//Remove existing mask (if any)
-			if (val.charAt(index) == mask)  {
-				val = val.substring(0, index) + val.substring(index + mask.length, val.length);
-				index--;
-
-				//If any other masks to the left of "index":
-				//Bubble left, and shift the mask one position to the left
-				if (val.substring(index, val.length).indexOf(mask) > -1) {
-					val = bubbleMaskLeft(val, mask, index);
-				}
-			}
-		}
-
-		if (event && event.key) {
-			//Incase the sliceBefore contains any masking characters, we need to
-			//increment an offset inorder for the formatting to work properly.
-			var offset = selectionEnd > index ? calcOffset(val) : 0;
-
-			//Remove existing mask (if any)
-			removeExistingMask();
-
-			//Set sliceBefore and sliceAfter with offset
-			var sliceBefore = val.substring(0, index - offset).trim();
-			var sliceAfter = val.substring(index - offset, maxlength).trim();
-
-			$input.val((sliceBefore + event.key + mask + sliceAfter).substring(0, maxlength));
-			$input.prop("selectionStart", selectionStart + 2);
-			$input.prop("selectionEnd", selectionStart + 2);
-
-			event.preventDefault();
-		}
-		else {
-			//Incase the sliceBefore contains any masking characters, we need to
-			//increment an offset inorder for the formatting to work properly.
-			var offset = selectionEnd > index ? calcOffset(val) : 0;
-
-			//Remove existing mask (if any)
-			removeExistingMask();
-
-			//Set sliceBefore and sliceAfter with offset
-			var sliceBefore = val.substring(0, index + 1 - offset).trim();
-			var sliceAfter = val.substring(index + 1 - offset, maxlength).trim();
-
-			$input.val((sliceBefore + mask + sliceAfter).substring(0, maxlength));
-			$input.prop("selectionStart", selectionStart + 1);
-			$input.prop("selectionEnd", selectionStart + 1);
-		}
-	}
-
-	//!!!!! Assuming mask is only one character !!!!!
-	function preventMaskDelete($input, event, mask, maskAt) {
-		var key = event.which || event.keyCode;
-		var selectionStart = parseInt($input.prop("selectionStart"));
-		var selectionEnd = parseInt($input.prop("selectionEnd"));
-		var maxlength = parseInt($input.attr("maxlength"));
-
-		if (selectionStart > 0) {
-			//Prevent delete when selection range = 0
-			if (selectionStart == selectionEnd && selectionEnd < maxlength) {
-				//if delete OR backspace -> preventDefault
-				if (maskAt(selectionStart, $input) &&
-						$input.val().substring(selectionStart, selectionStart + 1) == mask &&
-						$input.val().substring(selectionStart - 1, selectionStart) != mask &&
-						$input.val().substring(selectionStart + 1, selectionStart + 2) != mask &&
-						isDeleteKey(event)
-					) {
-							event.preventDefault();
-							$input.prop("selectionStart", selectionStart + mask.length);
-							$input.prop("selectionEnd", selectionStart + mask.length);
-				}
-				else if(maskAt(selectionStart - mask.length, $input) &&
-						$input.val().substring(selectionStart - 1, selectionStart) == mask &&
-						$input.val().substring(selectionStart - 2, selectionStart - 1) != mask &&
-						$input.val().substring(selectionStart, selectionStart + 1) != mask &&
-						isBackspaceKey(event)
-					) {
-							event.preventDefault();
-							$input.prop("selectionStart", selectionStart - mask.length);
-							$input.prop("selectionEnd", selectionStart - mask.length);
-				}
-			}
-			//If mask is the FIRST character in the
-			//selection range (i.e highlighted)
-			else if (maskAt(selectionStart, $input)) {
-				if (!isEditKeyEvent(event)) {
-					$input.prop("selectionStart", selectionStart + mask.length);
-				}
-			}
-			//If mask is the LAST character in the
-			//selection range (i.e highlighted)
-			else if (maskAt(selectionEnd - mask.length, $input)) {
-				if (!isEditKeyEvent(event)) {
-					$input.prop("selectionEnd", selectionEnd - mask.length);
-				}
-			}
-		}
-	}
-
-	function isDeleteKey(event) {
+	var isDeleteKey = function(event) {
 		var key = event.which || event.keyCode;
 		//Check if key is delete
 		if(key == 46) {
 			return true;
-    }
+		}
 		return false;
 	}
 
-	function isBackspaceKey(event) {
+	var isBackspaceKey = function(event) {
 		var key = event.which || event.keyCode;
 		//Check if key is backspace
 		if(key == 8) {
@@ -517,307 +323,20 @@ function initInputs() {
 	}
 
 	//Checks if key was delete, backspace, arrows, shift, ctrl, tab, home or end key
-	function isEditKeyEvent(event) {
+	var isEditKeyEvent = function(event) {
 		if (ctrlDown) return true;
 		var key = event.which || event.keyCode;
 		if(!isBackspaceKey(event) && key != 9 && !isDeleteKey(event) && key != 13 && key != 16 && key != 17 && key != 19 && (key < 35 || key > 40)) return false;
 		return true;
 	}
 
-	function reachedMaxValLength($element) {
-		return !$element.attr("maxlength") || $element.val().length >= parseInt($element.attr("maxlength"));
-	}
-
-	//Function used to determine if a user is typing
-	function userIsTyping($element, event) {
-		return !isEditKeyEvent(event) && !reachedMaxValLength($element);
-	}
-
-	//Function used to determine the mask index from
-	//class "account-mask" (used in the event bindings below)
-	var maskAtAccountMask = function (selectionStart) {
-		return selectionStart == 4 || selectionStart == 7;
-	}
-	//Prevents user from delete masking
-	$("input.account-mask").on("keydown", function(event) {
-		preventMaskDelete($(this), event, " ", maskAtAccountMask);
-	});
-
-	//Input masking for norwegian account numbers - regular input (keys)
-	//when a key is pressed (except "edit keys")
-	$("input.account-mask").on("keypress", function(event) {
-		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(!isEditKeyEvent(event)) {
-			var selectionStart = $(this).prop("selectionStart");
-
-			var maskAfterIndex = selectionStart + 1;
-			var maskBeforeIndex = selectionStart;
-
-			if (maskAtAccountMask(maskAfterIndex)) {
-				maskAtAfter(maskAfterIndex, " ", $(this), event);
-			}
-			else if (maskAtAccountMask(maskBeforeIndex)) {
-				maskAtBefore(maskBeforeIndex, " ", $(this), event);
-			}
-		}
-	});
-
-	//Clears non numeric input and formats the number on paste or change
-	$("input.account-mask").on("change paste", function() {
-    	var $this = $(this);
-    	setTimeout(function () {
-				clearNonNumericInput($this, false);
-	    	$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 4 || i == 6; }, 0));
-    	}, 100);
-  });
-
-	//Function used to determine the mask index from
-	//class "vps-account-mask" (used in the event bindings below)
-	var maskAtVPSAccountMask = function (selectionStart) {
-		return selectionStart == 5;
-	}
-	//Prevents user from delete masking
-	$("input.vps-account-mask").on("keydown", function(event) {
-		preventMaskDelete($(this), event, " ", maskAtVPSAccountMask);
-	});
-
-	//Input masking for VPS account numbers - regular input (keys)
-	$("input.vps-account-mask").on("keypress", function(event) {
-		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(!isEditKeyEvent(event)) {
-			var selectionStart = $(this).prop("selectionStart");
-
-			var maskAfterIndex = selectionStart + 1;
-			var maskBeforeIndex = selectionStart;
-
-			if (maskAtVPSAccountMask(maskAfterIndex)) {
-				maskAtAfter(maskAfterIndex, " ", $(this), event);
-			}
-			else if (maskAtVPSAccountMask(maskBeforeIndex)) {
-				maskAtBefore(maskBeforeIndex, " ", $(this), event);
-			}
-		}
-	});
-	//Clears non numeric input and formats the number on paste or change
-  $("input.vps-account-mask").on("change paste", function() {
-  	var $this = $(this);
-  		setTimeout(function () {
-				clearNonNumericInput($this, false);
-  		$this.val(formatAfterInput($this.val(), $this.attr("maxlength"), " ", function(i, x) { return i == 5; }, 0));
-  	}, 100);
-  });
-
-	//Prevents user from entering non "tel characters"
-	$('input[type="tel"]').on("keydown", function(event) {
-		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		var key = event.which || event.keyCode;
-		if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 40, 41, 107, 109, 171, 187, 189], true)) { //Don't remove characters: " ()+-", allow SHIFT key to be pressed
-			event.preventDefault();
-		}
-	});
-
-	//Function used to determine the mask index for
-	//"input[type="tel"]" (used in the event bindings below)
-	var maskAtTel = function (selectionStart, $input) {
-		var index = selectionStart - getSplitIndexForPhoneNumber($input.val());
-		return index == 3 || index == 6 || (index > 9 && (index + 2) % 4 == 0);
-	}
-	//Prevents user from delete masking
-	$('input[type="tel"]').on("keydown", function(event) {
-		preventMaskDelete($(this), event, " ", maskAtTel);
-	});
-
-	//Input masking for phone numbers
-	//Sets the following format to the input: {000 00 000}
-	//when a key is pressed (except "edit keys")
-	$('input[type="tel"]').on("keypress", function(event) {
-		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(!isEditKeyEvent(event)) {
-			var selectionStart = $(this).prop("selectionStart");
-
-			var maskAfterIndex = selectionStart + 1;
-			var maskBeforeIndex = selectionStart;
-
-			if (maskAtTel(maskAfterIndex, $(this))) {
-				//maskAtAfter(maskAfterIndex, " ", $(this), event);
-			}
-			else if (maskAtTel(maskBeforeIndex, $(this))) {
-				maskAtBefore(maskBeforeIndex, " ", $(this), event);
-			}
-		}
-	});
-
-	//To clear non numeric input - except "+" "-" "(" and ")"
-	//when a key is released (incase the user somehow
-	//manged to sneek in a non numeric character)
-	$('input[type="tel"]').on("keyup", function() {
-		clearNonNumericInput($(this), true, "+-() ");
-	});
-
-	//Sets the following format to the input: {000 00 000}
-	//on change or paste
-	$('input[type="tel"]').on("change paste", function() {
-    	var $this = $(this);
-    		setTimeout(function () {
-				clearNonNumericInput($this, false, "+-() ");
-    		var prefix = $this.val().substring(0, getSplitIndexForPhoneNumber($this.val()));
-    		$this.val(prefix + formatAfterInput($this.val().substring(getSplitIndexForPhoneNumber($this.val()), $this.val().length), $this.attr("maxlength"), " ", function(i, x) {
-    			return i == 3 || i == 5 || (i > 7 && (i + 1) % 3 == 0);
-    		}, 0));
-    	}, 100);
-    });
-
-	//Used to set the marker at the end of the prefilled input
-	//e.i country code for phone numbers
-	$(".prevent-select-on-tab").on("keyup", function(event)  {
- 		var key = event.which || event.keyCode;
- 		if (key == 9) {
- 			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
- 		}
- 	});
-	$(".prevent-select-on-tab").on("focus", function(event)  {
-		if (tabDown || $(this).prop("selectionStart") != $(this).prop("selectionEnd")) {
-			$(this).prop("selectionStart", $(this).prop("selectionEnd"));
-		}
- 	});
-
-
-	//Function used to determine the mask index from
-	//class "pad-3-by-3" (used in the event bindings below)
-	var maskAtPadBy3 = function (selectionStart) {
-		return (selectionStart + 1) % 4 == 0;
-	}
-
-	//The mask string used for class "pad-3-by-3"
-	//(used in the event bindings below)
-	var maskForPadBy3 = " ";
-
-	//TODO: test this function
-	var maskForPadBy3MustBubble = function (selectionStart, val) {
-		if (maskAtPadBy3(selectionStart)) return false;
-		if (val.length == selectionStart) return false;
-
-		var precedingMasks = 0;
-		for(var i = 0; i < selectionStart; i++) {
-			if (val.charAt(i) == maskForPadBy3) {
-				precedingMasks++;
-			}
-		}
-
-		var bulkSize = 3;
-		var offset = selectionStart % bulkSize;
-		var start = selectionStart - offset + precedingMasks;
-
-		var charsInBulk = 0;
-		for(var i = start; !maskAtPadBy3(i) ; i++) {
-			if (val.charAt(i) == maskForPadBy3) {
-				charsInBulk = 0;
-			}
-			else {
-				charsInBulk++;
-			}
-		}
-
-		return charsInBulk == bulkSize;
-	}
-
-	//Prevents user from delete masking
-	$("input.pad-3-by-3").on("keydown", function(event) {
-		preventMaskDelete($(this), event, maskForPadBy3, maskAtPadBy3);
-	});
-
-	//Sets the following format to the input: {000 000 000}
-	//when a key is pressed (except "edit keys")
-	$("input.pad-3-by-3").on("keypress", function(event) {
-		//Don't mess with value on delete, backspace, arrows, shift, ctrl, home or end key
-		if(!isEditKeyEvent(event)) {
-			var selectionStart = parseInt($(this).prop("selectionStart"));
-			var selectionEnd = parseInt($(this).prop("selectionEnd"));
-			var maskAfterIndex = selectionStart + 1;
-			var maskBeforeIndex = selectionStart;
-
-			if (maskAtPadBy3(maskAfterIndex)) {
-				maskAtAfter(maskAfterIndex, maskForPadBy3, $(this), event);
-			}
-			else if (maskAtPadBy3(maskBeforeIndex)) {
-				maskAtBefore(maskBeforeIndex, maskForPadBy3, $(this), event);
-			}
-			else if (!reachedMaxValLength($(this)) &&
-				selectionEnd == selectionStart &&
-				maskForPadBy3MustBubble(selectionStart, $(this).val())) {
-				var newVal = bubbleMaskLeft($(this).val(), maskForPadBy3, selectionStart).substring(0, parseInt($(this).attr("maxlength")));
-				$(this).val(newVal);
-				$(this).prop("selectionStart", selectionStart);
-				$(this).prop("selectionEnd", selectionStart);
-			}
-		}
-	});
-
-	$("input.pad-3-by-3").on("keyup", function(event) {
-		if(!isEditKeyEvent(event)) {
-			var selectionStart = parseInt($(this).prop("selectionStart"));
-
-			if (!reachedMaxValLength($(this)) &&
-				maskForPadBy3MustBubble(selectionStart, $(this).val())) {
-					$(this).val(padBy(3, $(this).val(), $(this).attr("maxlength")));
-					$(this).prop("selectionStart", selectionStart);
-					$(this).prop("selectionEnd", selectionStart);
-			}
-		}
-	});
-
-	//Sets the following format to the input: {000 000 000}
-	//on change or paste
-	  $("input.pad-3-by-3").on("change paste", function() {
-		var $this = $(this);
-		setTimeout(function () {
-			clearNonNumericInput($this, false);
-			$this.val(padBy(3, $this.val(), $this.attr("maxlength")));
-		}, 100);
-	  });
-
-	//For dates
-	//Prevents non-numeric input
-	$("input.format-date").on("keydown", function() {
-		var key = event.which || event.keyCode;
-		//Prevent non numeric characters
-		if (!isEditKeyEvent(event) && !isNumericKey(key, [32, 190], false)) { //Don't remove characters: " " and ".", don't allow SHIFT key
-				event.preventDefault();
-		}
-	});
-	//Sets the following format: {dd.mm.yyyy}
-	//when a key is pressed (except "edit keys")
-	$("input.format-date").on("keypress", function() {
-		//Don't mess with value on delete,
-		//backspace, arrows, shift, ctrl, home or end key
-		if (!isEditKeyEvent(event) && key != 190) {
-				var selectionStart = $(this).prop("selectionStart");
-				if (selectionStart == 2 || selectionStart == 5) {
-					maskAtBefore(selectionStart, ".", $(this), event);
-				}
-		}
-	});
-	//Clears non numeric unput on key released
-	$("input.format-date").on("keyup", function() {
-		clearNonNumericInput($(this), true);
-	});
-	//Sets the following format to the input: {dd.mm.yyyy}
-	//on change or paste
-	$("input.format-date").on("change paste", function() {
-		var $this = $(this);
-		setTimeout(function () {
-				clearNonNumericInput($this, false);
-				var formattedVal = formatAfterInput($this.val(), parseInt($this.attr("maxlength")), ".", function(i, x) { return i == 2 || i == 4; }, 2);
-				$this.val(formattedVal);
-		}, 100);
-	});
-
 	//Prevents user from entering non-numeric in
 	//numeric inputs (possible in several browsers, e.g safari, firefox)
 	$("input.numeric-decimal").on("keydown", function(event) {
 		var key = event.which || event.keyCode;
 		//Prevent non numeric characters
-		if (!isEditKeyEvent(event) && !isNumericKey(key, [188, 190], false)) {  //Don't remove characters: "," and ".", don't allow SHIFT key
+		//Don't remove characters: "," and ".", don't allow SHIFT key
+		if (!isEditKeyEvent(event) && !isNumericKey(key, [188, 190], false)) {
 			event.preventDefault();
 		}
 	});
