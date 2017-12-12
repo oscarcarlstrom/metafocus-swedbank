@@ -177,7 +177,7 @@ function initCheckBoxesAndRadios() {
 	//or checkbox is selected
 	$(".control input").on("change", function() {
 		if($(this).is(":checked")) {
-			$(this).closest(".control-container").find(".digiforms_validation_message:first").hide();
+			$(this).closest(".control-container").find(".digiforms_validation_message:not(.file-error):first").hide();
 		}
 	});
 }
