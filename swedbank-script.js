@@ -1196,7 +1196,7 @@ function validation() {
 		if(valTrimmed.length == parseInt($element.attr("maxlength"))) {
 			$validationInput.val(true);
 		}
-		else if(valTrimmed.length > 0 || ) {
+		else if(valTrimmed.length > 0) {
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
 			$errorMessage.text("Må være 20 tegn");
 		}
