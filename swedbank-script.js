@@ -1193,8 +1193,12 @@ function validation() {
 	var validateNValidateInputs = function($element) {
 		var $validationInput = findMyHiddenBrother($element);
 		var valTrimmed = removeWhiteSpaces($element.val());
-		if(valTrimmed.length == 0 || valTrimmed.length == parseInt($element.attr("maxlength"))) {
+		if(valTrimmed.length == parseInt($element.attr("maxlength"))) {
 			$validationInput.val(true);
+		}
+		else if(valTrimmed.length > 0 || ) {
+			var $errorMessage = $element.parent().find(".digiforms_validation_message");
+			$errorMessage.text("Må være 20 tegn");
 		}
 		else {
 			$validationInput.val(false);
