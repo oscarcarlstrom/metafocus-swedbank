@@ -1197,6 +1197,7 @@ function validation() {
 			$validationInput.val(true);
 		}
 		else if(valTrimmed.length > 0) {
+			$validationInput.val(false);
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
 			$errorMessage.text("Må være 20 tegn");
 		}
