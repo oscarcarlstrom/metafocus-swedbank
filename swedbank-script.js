@@ -11,7 +11,7 @@ var tabDown;
 var scrollToElementAddedByAJAX = false;
 
 //Use polyfill to enable numeric keypad on Android
-webshims.polyfill("forms");
+webshim.polyfill("forms");
 
 $(document).ready(function() {
 	//Remove browser validation
