@@ -260,8 +260,8 @@ function padBy(x, str, maxlength) {
 
 function initInputs() {
 	//Bring up the numeric keypad for iOS and Android
-	$("input.numeric-text").attr("pattern", "[0-9]*"); //iOS
 	$("input.numeric-text").attr("inputmode", "numeric"); //Android
+	$("input.numeric-text").attr("pattern", "[0-9]*"); //iOS
 
 	//Sets a mask for some classes:
 	$("input.numeric-text.no-mask").mask('0#');
