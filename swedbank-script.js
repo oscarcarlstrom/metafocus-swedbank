@@ -1159,14 +1159,15 @@ function validation() {
 
 	//Validation for norwegian input social security numbers
 	var validateSocialSecurityNumberNo = function($element) {
+		var $validationField = findMyHiddenBrother($element);
 		if($element.val().length > 0 && $element.val().length < parseInt($element.attr("maxlength"))) {
+			$validationField.val(false);
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
 			$errorMessage.text("Må være 11 siffer (DDMMÅÅXXXXX)");
 		}
 		else {
 			var valid1 = validationMOD11($element.val().substring(0, 10), "376189452", true); //1st Kontrollsiffer
 			var valid2 = validationMOD11($element.val(), "5432765432", false); //Second control number
-			var $validationField = findMyHiddenBrother($element);
 			$validationField.val(valid1 && valid2);
 			if(!(valid1 && valid2) && $element.val().length > 0) {
 				var $errorMessage = $element.parent().find(".digiforms_validation_message");
