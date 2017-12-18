@@ -10,6 +10,9 @@ var tabDown;
 //Used to detect a delete button has been pressed
 var scrollToElementAddedByAJAX = false;
 
+//Use polyfill to enable numeric keypad on Android
+webshim.polyfill("forms");
+
 $(document).ready(function() {
 	//Remove browser validation
 	//This is not currently needed to prevent the validation, but it might be
