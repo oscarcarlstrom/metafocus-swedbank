@@ -276,7 +276,8 @@ function initInputs() {
 
 	$("input.date-mask").mask("00.00.0000");
 
-	$("input.letteral-text").mask('Z',{translation: {'Z': {pattern: /[a-zA-Z ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏàáâãäåæçèéêëìíîïÐÑÒÓÔÕÖØÙÚÛÜÝÞßðñòóôõöøùúûüýþÿ-]/, recursive: true}}});
+	$("input.letteral-text").mask('ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
+		{translation: {'Z': {pattern: /[a-zA-Z ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏàáâãäåæçèéêëìíîïÐÑÒÓÔÕÖØÙÚÛÜÝÞßðñòóôõöøùúûüýþÿ-]/}}});
 
 	//Checks if keyCode is numeric
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
