@@ -275,6 +275,8 @@ function initInputs() {
 	$("input.org-number-mask").mask("000 000 000");
 
 	$("input.date-mask").mask("00.00.0000");
+	
+	$("input.letteral-text").mask('Z',{translation: {'Z': {pattern: /[a-zA-Z ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏàáâãäåæçèéêëìíîïÐÑÒÓÔÕÖØÙÚÛÜÝÞßðñòóôõöøùúûüýþÿ-]/, recursive: true}}});
 
 	//Checks if keyCode is numeric
 	//Allows keycodes are defined by the array "exceptionKeyCodes"
