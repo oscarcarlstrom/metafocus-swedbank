@@ -191,7 +191,17 @@ function initHelptexts() {
 	$helpTexts.attr("aria-hidden", "true");
 
 	var $helpBtns = $(".btn-help");
-	$helpBtns.attr("aria-label", "Hva menes med dette?");
+
+	if ($("html").attr("lang").toLowerCase() == "se") {
+		$helpBtns.attr("aria-label", "Vad menas med detta?");
+	}
+	else if ($("html").attr("lang").toLowerCase() == "en") {
+		$helpBtns.attr("aria-label", "What does this mean?");
+	}
+	else {
+		$helpBtns.attr("aria-label", "Hva menes med dette?");
+	}
+
 	$helpBtns.attr("aria-expanded", "false");
 
 	$.each($helpBtns, function() {
@@ -222,12 +232,28 @@ function initHelptexts() {
 		$helpText.toggle();
 
 		if ($helpText.is(":visible")) {
-			$helpBtns.attr("aria-label", "Lukk hjelpetekst");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$helpBtns.attr("aria-label", "Stäng hjälptext");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$helpBtns.attr("aria-label", "Close help text");
+			}
+			else {
+				$helpBtns.attr("aria-label", "Lukk hjelpetekst");
+			}
 			$helpText.attr("aria-hidden", "false");
 			$helpBtns.attr("aria-expanded", "true");
 		}
 		else {
-			$helpBtns.attr("aria-label", "Hva menes med dette?");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$helpBtns.attr("aria-label", "Vad menas med detta?");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$helpBtns.attr("aria-label", "What does this mean?");
+			}
+			else {
+				$helpBtns.attr("aria-label", "Hva menes med dette?");
+			}
 			$helpText.attr("aria-hidden", "true");
 			$helpBtns.attr("aria-expanded", "false");
 		}
@@ -469,7 +495,14 @@ function initAccordionsAddedByAJAX() {
 		}
 		else {
 			var idSplit = $button.attr("id").split("_");
-			$button.html(prefix + "Reell rettighetshaver " + (idSplit.length > 0 ? idSplit[idSplit.length - 1] : "") + suffix);
+			var text = "Reell rettighetshaver";
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				text = "Reell rättighetshavare";
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				text = "Beneficial owner";
+			}
+			$button.html(prefix + text + " " + (idSplit.length > 0 ? idSplit[idSplit.length - 1] : "") + suffix);
 		}
 	};
 
@@ -650,7 +683,14 @@ function adjustErrorMessageList() {
 				else if (heading.indexOf("Aktører i bedriften") > -1) {
 					//Update error text
 					var currentBenifitialOwner = $(this).attr("href").split("_").pop().trim();
-					prefixBenifitialOwners = "Reell rettighetshaver " + currentBenifitialOwner + " - ";
+					var text = "Reell rettighetshaver";
+					if ($("html").attr("lang").toLowerCase() == "se") {
+						text = "Reell rättighetshavare";
+					}
+					else if ($("html").attr("lang").toLowerCase() == "en") {
+						text = "Beneficial owner";
+					}
+					prefixBenifitialOwners = text + " " + currentBenifitialOwner + " - ";
 					$(this).prepend(prefixBenifitialOwners);
 
 					//Update the href so that it can be scrolled into view nicely
@@ -677,7 +717,14 @@ function adjustErrorMessageList() {
 	});
 
 	//Adjust som more auto generated HTML mark-up
-	$(".error-summary").prepend("<h3>Vi må be deg om å rette opp noen feil</h3>");
+	var h3Text = "Vi må be deg om å rette opp noen feil";
+	if ($("html").attr("lang").toLowerCase() == "se") {
+		h3Text = "Vi måste tyvärr be dig om att rätta några fel";
+	}
+	else if ($("html").attr("lang").toLowerCase() == "en") {
+		h3Text = "We must ask you to correct a couple of errors";
+	}
+	$(".error-summary").prepend("<h3>" + h3Text + "</h3>");
 	$(".error-summary").show();
 }
 
@@ -709,7 +756,16 @@ function appendAriaAttributesForPageSections() {
 
 	//Bottom nav
 	$(".next-prev-nav").attr("role", "navigation");
-	$(".next-prev-nav").attr("aria-label", "Forrige / Neste");
+
+	if ($("html").attr("lang").toLowerCase() == "se") {
+		$(".next-prev-nav").attr("aria-label", "Föregående / Nästa");
+	}
+	else if ($("html").attr("lang").toLowerCase() == "en") {
+		$(".next-prev-nav").attr("aria-label", "Previous / Next");
+	}
+	else {
+		$(".next-prev-nav").attr("aria-label", "Forrige / Neste");
+	}
 }
 
 //Toggles text on change
@@ -717,8 +773,18 @@ function changeTextOnChange() {
 
 	//Adjusts the (auto generated) HTML for the specific PEP question
 	var $togglePEPText = $("#pep-text-container").find("fieldset legend:first");
-	$togglePEPText.text("Er noen av foretakets ");
-	$togglePEPText.append('<span class="text-toggle">reelle rettighetshavere, </span>styremedlemmer, daglig leder eller kontaktperson(er) en Politisk Eksponert Person (PEP)?');
+	if ($("html").attr("lang").toLowerCase() == "se") {
+		$togglePEPText.text("Är någon av verksamhetens ");
+		$togglePEPText.append('<span class="text-toggle">reelle rättighetshavare, </span>styrelseledamöter, vd eller kontaktperson(er) en person i ”Politisk utsatt ställning” (PEP)?');
+	}
+	else if ($("html").attr("lang").toLowerCase() == "en") {
+		$togglePEPText.text("Is any of the ");
+		$togglePEPText.append('<span class="text-toggle">beneficial owners, </span>board members, CEO or contact person(s) a Politically Exposed Person (PEP)?');
+	}
+	else {
+		$togglePEPText.text("Er noen av foretakets ");
+		$togglePEPText.append('<span class="text-toggle">reelle rettighetshavere, </span>styremedlemmer, daglig leder eller kontaktperson(er) en Politisk Eksponert Person (PEP)?');
+	}
 	$togglePEPText.append('<span class="asterix" aria-hidden="true"> *</span>');
 
 	//Toggles text identified by the id suffix of the element itself
@@ -975,7 +1041,15 @@ function checkAndAutoFillFromOrgNr($orgNrInput) {
 						}
 						else {
 							//Set error message text and value for hidden validation input
-							$errorMessage.text("Ugyldig organisasjonsnummer");
+							if ($("html").attr("lang").toLowerCase() == "se") {
+								$errorMessage.text("Ogiltigt organisationsnummer");
+							}
+							else if ($("html").attr("lang").toLowerCase() == "en") {
+								$errorMessage.text("Invalid organization number");
+							}
+							else {
+								$errorMessage.text("Ugyldig organisasjonsnummer");
+							}
 							$validationField.val("false");
 						}
 
@@ -1010,7 +1084,15 @@ function checkAndAutoFillFromOrgNr($orgNrInput) {
 						$placeInput.val(place);
 
 						//Set error message text and value for hidden validation input
-			    	$errorMessage.text("Ugyldig organisasjonsnummer");
+						if ($("html").attr("lang").toLowerCase() == "se") {
+							$errorMessage.text("Ogiltigt organisationsnummer");
+						}
+						else if ($("html").attr("lang").toLowerCase() == "en") {
+							$errorMessage.text("Invalid organization number");
+						}
+						else {
+							$errorMessage.text("Ugyldig organisasjonsnummer");
+						}
 			    	$validationField.val("false");
 		    }
 			}).always(function() {
@@ -1030,8 +1112,18 @@ function checkAndAutoFillFromOrgNr($orgNrInput) {
 			});
 	}
 	else { //Adjust error message and hidden validation input
-		if (orgNr.length > 0) $errorMessage.text("Må være 9 siffer");
-		else $errorMessage.text("Må fylles ut");
+		if ($("html").attr("lang").toLowerCase() == "se") {
+			if (orgNr.length > 0) $errorMessage.text("Måste vara 9 siffror");
+			else $errorMessage.text("Måste fylles i");
+		}
+		else if ($("html").attr("lang").toLowerCase() == "en") {
+			if (orgNr.length > 0) $errorMessage.text("Must be 9 digits");
+			else $errorMessage.text("Must be filled out");
+		}
+		else {
+			if (orgNr.length > 0) $errorMessage.text("Må være 9 siffer");
+			else $errorMessage.text("Må fylles ut");
+		}
 		$validationField.val("false");
 	}
 }
@@ -1111,7 +1203,15 @@ function validation() {
 	var validateAccountNo = function($element) {
 		if ($element.val().length > 0 && $element.val().length < parseInt($element.attr("maxlength"))) {
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
-			$errorMessage.text("Må være 11 siffer");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$errorMessage.text("Måste vara 11 siffror");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$errorMessage.text("Must be 11 digits");
+			}
+			else {
+				$errorMessage.text("Må være 11 siffer");
+			}
 		}
 		var valid = validationMOD11($element.val(), "5432765432", false);
 		var $validationField = findMyHiddenBrother($element);
@@ -1121,7 +1221,15 @@ function validation() {
 		}
 		else if (!valid && $element.val().length == parseInt($element.attr("maxlength"))) {
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
-			$errorMessage.text("Ugyldig kontonummer");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$errorMessage.text("Ogiltigt kontonummer");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$errorMessage.text("Invalid account number");
+			}
+			else {
+				$errorMessage.text("Ugyldig kontonummer");
+			}
 		}
 	}
 
@@ -1148,6 +1256,12 @@ function validation() {
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
 			if (valTrimmed.length > 0) {
 				$errorMessage.text("Må være 12 siffer");
+				if ($("html").attr("lang").toLowerCase() == "se") {
+					$errorMessage.text("Måste vara 12 siffror");
+				}
+				else if ($("html").attr("lang").toLowerCase() == "en") {
+					$errorMessage.text("Must be 12 digits");
+				}
 			}
 		}
 	}
@@ -1167,6 +1281,12 @@ function validation() {
 			$validationField.val(false);
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
 			$errorMessage.text("Må være 11 siffer (DDMMÅÅXXXXX)");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$errorMessage.text("Måste vara 11 siffror (DDMMÅÅXXXXX)");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$errorMessage.text("Must be 11 digits (DDMMYYXXXXX)");
+			}
 		}
 		else {
 			var valid1 = validationMOD11($element.val().substring(0, 10), "376189452", true); //1st Kontrollsiffer
@@ -1175,6 +1295,12 @@ function validation() {
 			if(!(valid1 && valid2) && $element.val().length > 0) {
 				var $errorMessage = $element.parent().find(".digiforms_validation_message");
 				$errorMessage.text("Ugyldig fødselsnummer");
+				if ($("html").attr("lang").toLowerCase() == "se") {
+					$errorMessage.text("Ogiltigt personnummer");
+				}
+				else if ($("html").attr("lang").toLowerCase() == "en") {
+					$errorMessage.text("Invalid social security number");
+				}
 			}
 		}
 	}
@@ -1204,6 +1330,12 @@ function validation() {
 			$validationInput.val(false);
 			var $errorMessage = $element.parent().find(".digiforms_validation_message");
 			$errorMessage.text("Må være 20 tegn");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$errorMessage.text("Måste vara 20 tecken");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$errorMessage.text("Must be 20 characters");
+			}
 		}
 		else {
 			$validationInput.val(false);
@@ -1277,6 +1409,12 @@ function initFileDownloadLinks() {
 function setAriaAttributesForFileDownloadButtons() {
 	$.each($(".file-download"), function() {
 		$(this).attr("aria-label", "Åpne");
+		if ($("html").attr("lang").toLowerCase() == "se") {
+			$(this).attr("aria-label", "Öppna");
+		}
+		else if ($("html").attr("lang").toLowerCase() == "en") {
+			$(this).attr("aria-label", "Open");
+		}
 	});
 }
 
@@ -1290,9 +1428,12 @@ function adjustErrorMessagesForFileUpload() {
 		var allowedValues = $errorMsgText.text().substring($errorMsgText.text().indexOf("[") + 1, $errorMsgText.text().indexOf("]")).trim();
 		if($errorMsgText.text().indexOf("File type") >= 0) {
 			$errorMsgText.text("Beklager, filtypen er ikke støttet! Vi trenger en av følgende filtyper: " + allowedValues + ".");
-		}
-		else if ($errorMsgText.text().indexOf("File is") >= 0) {
-			$errorMsgText.text("Beklager, filen er for stor! Den kan ikke være større enn " + allowedValues + ".");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$errorMsgText.text("Filformatet stöds tyvärr inte! Vi behöver en fil i ett av följande format: " + allowedValues + ".");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$errorMsgText.text("Sorry, the file format is not supported! We need a file with one of the following formats: " + allowedValues + ".");
+			}
 		}
 	}
 }
@@ -1355,7 +1496,17 @@ function disableAddButtonsWhenMaxIsReached() {
 		if(!$("#button-disabled-description").length) {
 			//Show info text
 			//As per now we only have one of these (so the message is hard coded) - should be modified if a more generic functionallity is needed
-			$loadContainer.append("<p id='button-disabled-description' class='text-center'><strong>Du kan ikke legge til flere rettighetshavere.</strong></p>");
+			$loadContainer.append("<p id='button-disabled-description' class='text-center'><strong>");
+			if ($("html").attr("lang").toLowerCase() == "se") {
+				$loadContainer.append("Du kan inte lägga till flera rättighetshavare.");
+			}
+			else if ($("html").attr("lang").toLowerCase() == "en") {
+				$loadContainer.append("You can not add any more benifital owners.");
+			}
+			else {
+				$loadContainer.append("Du kan ikke legge til flere rettighetshavere.");
+			}
+			$loadContainer.append("</strong></p>");
 		}
 	}
 	else {
