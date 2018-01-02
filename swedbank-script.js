@@ -676,11 +676,11 @@ function adjustErrorMessageList() {
 					}
 				}
 				//Adjust link to file upload error
-				else if ($(this).text().toLowerCase().indexOf("laste opp fullmakt") > -1) {
+				else if (isFileUpload($(this).text())) {
 					$(this).attr("href", $(this).attr("href").split("#")[0] + "#fullmakt-container");
 				}
 				//Adjust text and link for benifital owners
-				else if (heading.indexOf("Aktører i bedriften") > -1) {
+				else if (isBenifitialOwners(heading)) {
 					//Update error text
 					var currentBenifitialOwner = $(this).attr("href").split("_").pop().trim();
 					var text = "Reell rettighetshaver";
@@ -726,6 +726,27 @@ function adjustErrorMessageList() {
 	}
 	$(".error-summary").prepend("<h3>" + h3Text + "</h3>");
 	$(".error-summary").show();
+
+	//Functions used to identify specific nodes in the server response
+	function isFileUpload(text) {
+		if ($("html").attr("lang").toLowerCase() == "se") {
+			return text.toLowerCase().indexOf("ladda upp fullmakt") > -1;
+		}
+		else if ($("html").attr("lang").toLowerCase() == "en") {
+			return text.toLowerCase().indexOf("upload power of attorney") > -1;
+		}
+		return text.toLowerCase().indexOf("laste opp fullmakt") > -1;
+	}
+
+	function isBenifitialOwners(text) {
+		if ($("html").attr("lang").toLowerCase() == "se") {
+			return text.toLowerCase().indexOf("aktörer i verksamheten") > -1;
+		}
+		else if ($("html").attr("lang").toLowerCase() == "en") {
+			return text.toLowerCase().indexOf("stakeholders") > -1;
+		}
+		return text.toLowerCase().indexOf("aktører i bedriften") > -1;
+	}
 }
 
 //Adjusts error messages that has class "trim-errormsg"
