@@ -654,7 +654,8 @@ function adjustErrorMessageList() {
 							},
 							success: function (data) {
 								var xmlData = $.parseXML(data);
-								var aktorerIBedriftenChilds = xmlData.getElementsByTagName("aktorer-i-bedriften")[0].childNodes;
+								var xmlNode = xmlData.getElementsByTagName("aktorer-i-bedriften")[0];
+								var aktorerIBedriftenChilds = xmlNode ? xmlNode.childNodes : [];
 
 								for (var i=0; i < aktorerIBedriftenChilds.length; i++) {
 									//Update the text of the error message (the company does not have any benifital owners)
