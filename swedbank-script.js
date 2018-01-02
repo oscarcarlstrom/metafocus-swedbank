@@ -1518,17 +1518,18 @@ function disableAddButtonsWhenMaxIsReached() {
 		if(!$("#button-disabled-description").length) {
 			//Show info text
 			//As per now we only have one of these (so the message is hard coded) - should be modified if a more generic functionallity is needed
-			$loadContainer.append("<p id='button-disabled-description' class='text-center'><strong>");
+			var markUp = "<p id='button-disabled-description' class='text-center'><strong>";
 			if ($("html").attr("lang").toLowerCase() == "se") {
-				$loadContainer.append("Du kan inte lägga till flera rättighetshavare.");
+				markUp += "Du kan inte lägga till flera rättighetshavare.";
 			}
 			else if ($("html").attr("lang").toLowerCase() == "en") {
-				$loadContainer.append("You can not add any more benifital owners.");
+				markUp += "You can not add any more benifital owners.";
 			}
 			else {
-				$loadContainer.append("Du kan ikke legge til flere rettighetshavere.");
+				markUp += "Du kan ikke legge til flere rettighetshavere.";
 			}
-			$loadContainer.append("</strong></p>");
+			markUp += "</strong></p>";
+			$loadContainer.append(markUp);
 		}
 	}
 	else {
