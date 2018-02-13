@@ -1481,7 +1481,7 @@ function setAriaAttributesForDeleteButtons() {
 			$item = $deletableElement.find("#rettighetshaver" + n);
 		}
 		else {
-			$item = $description.find(".item");
+			$item = $deletableElement.find(".item");
 		}
 		if ($item.length) {
 			$(this).attr("aria-controls", $item.attr("id"));
