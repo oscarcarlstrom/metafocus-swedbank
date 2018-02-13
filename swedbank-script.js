@@ -260,6 +260,30 @@ function initHelptexts() {
 	});
 }
 
+//Takes a string and inserts the given
+//mask when the function maskHere() returns true
+//The parameter x is optional in the function maskHere()
+//But is required in this function
+function formatAfterInput(str, maxlength, mask, maskHere, x) {
+	var valTrimmed = removeWhiteSpaces(str);
+	valTrimmed = removeSubstr(valTrimmed, mask);
+	var lastSliceIndex = 0;
+	var newVal = "";
+	for(var i = x; i < valTrimmed.length; i++) { //Make sure to prevent array out of bounds
+		if (maskHere(i, x)) {
+			newVal += valTrimmed.substring(lastSliceIndex, i) + mask;
+			lastSliceIndex = i;
+		}
+	}
+	newVal += valTrimmed.substring(lastSliceIndex, valTrimmed.length);
+	return newVal.substring(0, maxlength);
+}
+
+//Pads the given string with a space, by x characters
+function padBy(x, str, maxlength) {
+	return formatAfterInput(str, maxlength, " ", function(i, x) { return i % x == 0; }, x);
+}
+
 function initInputs() {
 	//Bring up the numeric keypad for iOS and Android
 	$("input.numeric-text").attr("inputmode", "numeric"); //Android
