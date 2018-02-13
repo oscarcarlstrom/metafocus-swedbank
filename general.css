@@ -131,7 +131,7 @@ table.table-responsive td {
 
 /********** Hiding **********/
 .hidden {
-	display: none !important;
+    display: none !important;
 }
 
 .hidden-positon {
@@ -147,16 +147,20 @@ table.table-responsive td {
 
 /********** Skip link **********/
 .skip-navigation a {
-	position: absolute;
-  	left: -9999px;
-  	font-size: 1.2em;
-  	font-family: inherit;
+    position: absolute;
+    left: -9999px;
+    font-size: 1.2em;
+    font-family: inherit;
 }
 
 .skip-navigation a:focus {
-	position: relative;
-  	left: auto;
-  	font-family: inherit;
+    position: relative;
+    left: auto;
+    font-family: inherit;
+}
+
+.capital-text {
+	text-transform: capitalize;
 }
 
 /********** Nav **********/
@@ -198,7 +202,7 @@ nav li.current button:before {
 
 /************* Next previous navigation ***************/
 .next-prev-nav {
-	padding-bottom: 89px;
+    padding-bottom: 89px;
     padding-top: 55px;
 }
 
@@ -231,8 +235,8 @@ button:not([disabled="disabled"]), label.btn {
 
 button, label.btn {
     text-align: center;
-	border: solid 2px transparent;
-	/*Prevent user from accidentally selecting the text*/
+    border: solid 2px transparent;
+    /*Prevent user from accidentally selecting the text*/
     -moz-user-select: none;
     khtml-user-select: none;
     -webkit-user-select: none;
@@ -251,31 +255,31 @@ button, label.btn {
 }
 
 .btn:disabled {
-	opacity: 0.4 !important;
-	cursor: not-allowed !important;
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
 }
 
 button.btn-wide-100 {
-	width: 100% !important;
+    width: 100% !important;
 }
 
 label.btn-wide-100, a.btn-wide-100 {
-	width: calc(100% - 30px) !important;
-	display: block;
-	margin-left: auto;
+    width: calc(100% - 30px) !important;
+    display: block;
+    margin-left: auto;
     margin-right: auto;
 }
 
 .btn-wide-90 {
-	width: calc(90% - 30px) !important;
+    width: calc(90% - 30px) !important;
 }
 
 .btn-wide-80 {
-	width: calc(80% - 30px) !important;
+    width: calc(80% - 30px) !important;
 }
 
 .btn-wide-70 {
-	width: calc(70% - 30px) !important;
+    width: calc(70% - 30px) !important;
 }
 
 button.btn-high-100 {
@@ -300,7 +304,7 @@ label.btn-high-100 {
 }
 
 button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
-	box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .btn.btn-lg {
@@ -318,15 +322,15 @@ button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
 }
 
 .btn-fixed-md {
-	width: 100%;
+    width: 100%;
     margin-bottom: 13px;
 }
 
 /*These buttons don't display any text (icons only)*/
 .btn.btn-sm {
-	height: 2em;
-	width: 2em;
-	padding: 0.5em;
+    height: 2em;
+    width: 2em;
+    padding: 0.5em;
 }
 
 .btn.btn-help {
@@ -344,13 +348,13 @@ button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
 }
 
 .btn-delete-sm-container {
-	height: 2em;
-	padding: 1em 0;
+    height: 2em;
+    padding: 1em 0;
 }
 
 .btn.btn-delete.btn-sm {
-	background-size: 55%;
-	background-position-x: 50% !important;
+    background-size: 55%;
+    background-position-x: 50% !important;
 }
 
 .btn.btn-delete {
@@ -373,7 +377,7 @@ button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
     background-repeat: no-repeat;
     background-position-y: 45%;
     background-position-x: calc(50% - 2.2em);
-    background-size: 1em;
+    background-size: 1em 1em;
 }
 
 /********** Help buttons **********/
@@ -397,6 +401,10 @@ button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
     margin-bottom: 1.5em;
 }
 
+.help-elements-for-sub-section {
+    padding-bottom: 0 !important;
+}
+
 .help-text {
     padding: 3em 8%;
     background-color: #ebf8f2 !important;
@@ -416,7 +424,7 @@ button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
 
 /****container-elements that has focus*****/
 .focused {
-	border-color: #f35b1c !important;
+    border-color: #f35b1c !important;
 }
 
 /********** Inputs and selects **********/
@@ -436,8 +444,8 @@ button.accordion:hover, .btn:hover:not([disabled="disabled"]) {
 }
 
 .inputfelt:focus, select:focus {
-	padding: 11px !important;
-	border: 2px solid #f35b1c !important;
+    padding: 11px !important;
+    border: 2px solid #f35b1c !important;
 }
 
 .inputfelt:disabled, select:disabled {
@@ -473,32 +481,33 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 select, option {
-	 font-family: inherit !important;
+     font-family: inherit !important;
 }
 
 .select-container {
-	position: relative;
+    position: relative;
 }
 
 .select-container .label_control::after {
-	content: "";
-	display: block;
-	width: .7em;
-	height: 0.7em;
-	border: solid #512b2b;
-	border-width: 0 0.1em 0.1em 0;
-	transform: rotate(45deg);
-	-moz-transform: rotate(45deg);
-	-webkit-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
-	-o-transform: rotate(45deg);
-	position: absolute;
-	right: 24px;
-	bottom: calc(12px + 0.6em);
+    content: "";
+    display: block;
+    width: .7em;
+    height: 0.7em;
+    border: solid #512b2b;
+    border-width: 0 0.1em 0.1em 0;
+    transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    position: absolute;
+    right: 24px;
+    bottom: calc(12px + 0.6em);
+    pointer-events: none;
 }
 
 select {
-	cursor: pointer;
+    cursor: pointer;
     text-indent: 1px;
     text-overflow: '';
     background-color: white !important;
@@ -529,11 +538,11 @@ select::-ms-expand {
 
 /********** Checkboxes and radio-buttons **********/
 .control-sub-section > fieldset > legend {
-	margin-bottom: 21px !important;
+    margin-bottom: 21px !important;
 }
 
 .control-container {
-	font-family: inherit;
+    font-family: inherit;
 }
 
 .control-container-tight > fieldset {
@@ -551,15 +560,15 @@ select::-ms-expand {
 }
 
 .control {
-	position: relative;
-	padding-top: 12px;
-	margin-top: 2px;
-	margin-bottom: 2px;
-	border: solid 2px transparent;
+    position: relative;
+    padding-top: 12px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border: solid 2px transparent;
 }
 
 .control .label_control {
-	vertical-align: top !important;
+    vertical-align: top !important;
 }
 
 /*control text - digiforms*/
@@ -598,13 +607,13 @@ select::-ms-expand {
 
 /*Checkbox/Radio checked*/
 .control .label_text.checked label::before {
-	border-color: #257886 !important;
-	background-color: #257886 !important;
+    border-color: #257886 !important;
+    background-color: #257886 !important;
 }
 
 .control .label_text.checked label::after {
-	content: "";
-	position: absolute;
+    content: "";
+    position: absolute;
 }
 
 /*Checkbox checked*/
@@ -615,9 +624,9 @@ select::-ms-expand {
     border-width: 0 5px 5px 0;
     transform: rotate(45deg);
     -moz-transform: rotate(45deg) translate3d( 0, 0, 1px); /*Firefox boxing border*/
-	-webkit-transform: rotate(45deg) translate3d( 0, 0, 1px); /*Firefox boxing border*/
-	-ms-transform: rotate(45deg);
-	-o-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg) translate3d( 0, 0, 1px); /*Firefox boxing border*/
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
     left: 19.5px;
     top: 13px;
     /*border-color: #257886 !important;*/
@@ -626,7 +635,7 @@ select::-ms-expand {
 
 /*Radio*/
 .radio .label_text label::before {
-	border-radius: 50%;
+    border-radius: 50%;
 }
 
 /*Radio checked*/
@@ -641,17 +650,17 @@ select::-ms-expand {
 }
 
 .specify {
-	margin-left: 12px;
-	font-family: inherit !important;
+    margin-left: 12px;
+    font-family: inherit !important;
 }
 
 .specify > div > label {
-	font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+    font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
 }
 
 .specify textarea {
-	font-family: inherit !important;
-	max-width: calc(100% - 24px) !important
+    font-family: inherit !important;
+    max-width: calc(100% - 24px) !important
 }
 
 /********** Accordions **********/
@@ -675,24 +684,24 @@ select::-ms-expand {
 }
 
 .accordion-container-info {
-	background-color: #e9f7fb !important;
+    background-color: #e9f7fb !important;
 }
 
 .accordion-container-success {
-	background-color: #ebf8f2 !important;
+    background-color: #ebf8f2 !important;
 }
 
 button.accordion {
-	border-radius: 2px;
-	background-color: transparent;
-	cursor: pointer;
-	padding: 30px;
-	width: 100%;
-	text-align: left !important;
-	font-size: 165%;
-	font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
-	transition: 0.4s;
-	color: #512b2b;
+    border-radius: 2px;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 30px;
+    width: 100%;
+    text-align: left !important;
+    font-size: 165%;
+    font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+    transition: 0.4s;
+    color: #512b2b;
 }
 
 button.accordion span.chev {
@@ -712,20 +721,20 @@ button.accordion span.chev::before {
     display: inline-block;
     transform: rotate(45deg);
     -moz-transform: rotate(45deg);
-	-webkit-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
-	-o-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
     position: absolute;
     content: "";
     top: 0.35em;
 }
 
 button.accordion.active span.chev::before {
-	transform: rotate(135deg);
-	-moz-transform: rotate(135deg);
-	-webkit-transform: rotate(135deg);
-	-ms-transform: rotate(135deg);
-	-o-transform: rotate(135deg);
+    transform: rotate(135deg);
+    -moz-transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+    -ms-transform: rotate(135deg);
+    -o-transform: rotate(135deg);
 }
 
 button.accordion span.desc {
@@ -735,15 +744,15 @@ button.accordion span.desc {
 }
 
 .accordion-container.small button.accordion {
-	padding: 15px !important;
-	width: 100% !important;
-	font-size: 100% !important;
-	background-color: transparent !important;
+    padding: 15px !important;
+    width: 100% !important;
+    font-size: 100% !important;
+    background-color: transparent !important;
 }
 
 /********** Panels **********/
 .panel {
-	/*padding: 13px;*/
+    /*padding: 13px;*/
     padding: 5% 5% calc(2em + 5%) 5%;
     border-radius: 2px;
     margin-bottom: 21px;
@@ -763,12 +772,12 @@ button.accordion span.desc {
     background-color: #e9f7fb !important;
 }
 .panel.panel-info p {
-	color: #257886;
+    color: #257886;
     font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif;
 }
 
 .panel.panel-success {
-	background-color: #ebf8f2 !important;
+    background-color: #ebf8f2 !important;
 }
 .panel.panel-success p {
     font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif;
@@ -787,85 +796,85 @@ button.accordion span.desc {
 }
 
 .accordion-container .panel input, .accordion-container .panel select {
-	border-color: transparent;
+    border-color: transparent;
 }
 
 .accordion-container .panel .accordion-container.small {
-	background-color: #ebe7e2;
-	margin-right: 13px;
-	margin-left: 13px;
+    background-color: #ebe7e2;
+    margin-right: 13px;
+    margin-left: 13px;
 }
 
 .accordion-container.small .panel h4 {
-	margin-right: 13px;
-	margin-left: 13px;
+    margin-right: 13px;
+    margin-left: 13px;
 }
 
 .accordion-container.small .panel {
-	background-color: transparent;
+    background-color: transparent;
     padding-top: 0 !important;
 }
 
 .accordion-container .panel table {
-	width: 100%;
-	font-family: inherit !important;
-	color: #512b2b !important;
+    width: 100%;
+    font-family: inherit !important;
+    color: #512b2b !important;
 }
 
 .accordion-container .panel table tr {
-	font-family: inherit !important;
-	color: inherit !important;
+    font-family: inherit !important;
+    color: inherit !important;
 }
 
 .accordion-container .panel table tr.row-group > th {
-	padding-top: 34px;
+    padding-top: 34px;
 }
 
 .accordion-container .panel table th {
-	padding: 13px;
-	font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
-	text-align: left !important;
-	color: inherit !important;
-	font-weight: normal !important;
-	display: block;
+    padding: 13px;
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+    text-align: left !important;
+    color: inherit !important;
+    font-weight: normal !important;
+    display: block;
 }
 
 .accordion-container .panel table td {
-	padding: 0 13px 21px 13px;
-	font-family: inherit !important;
-	font-size: 1.3em;
-	color: inherit !important;
-	display: block;
+    padding: 0 13px 21px 13px;
+    font-family: inherit !important;
+    font-size: 1.3em;
+    color: inherit !important;
+    display: block;
 }
 
 .accordion-container .panel .list-container, .text-container {
-	padding: 13px;
-	font-family: Swedbank Sans Regular, Arial, sans-serif !important;
+    padding: 13px;
+    font-family: Swedbank Sans Regular, Arial, sans-serif !important;
 }
 
 .accordion-container.small .panel .list-container {
-	font-size: 1.2em;
-	padding-bottom: 21px;
+    font-size: 1.2em;
+    padding-bottom: 21px;
 }
 
 .list-container > p {
-	font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+    font-family: Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
 }
 
 .list-container > ul {
-	list-style: none;
-	position: relative;
-	font-family: inherit !important;
+    list-style: none;
+    position: relative;
+    font-family: inherit !important;
     padding-left: 2em;
 }
 
 .list-container > ul > li {
-	font-family: inherit !important;
-	margin-bottom: 0.5em;
+    font-family: inherit !important;
+    margin-bottom: 0.5em;
 }
 
 .accordion-container.not(.small) .panel .list-container > ul > li {
-	font-size: 1.3em;
+    font-size: 1.3em;
 }
 
 .list-container > ul > li::before {
@@ -1050,10 +1059,10 @@ form {
 
 @media screen and (min-width: 400px) {
     /********** Buttons **********/
-	.btn.btn-lg {
-    	font-size: 1.3em;
-    	font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
-	}
+    .btn.btn-lg {
+        font-size: 1.3em;
+        font-family: Swedbank Sans Bold, Swedbank Sans Medium, Swedbank Sans Regular, Arial, sans-serif !important;
+    }
 }
 
 @media screen and (min-width: 455px) {
@@ -1112,20 +1121,20 @@ form {
     }
 
     /********** Accordions **********/
-	.accordion-container .panel .form-group {
-		padding-left: 8% !important;
-		padding-right: 8% !important;
-	}
+    .accordion-container .panel .form-group {
+        padding-left: 8% !important;
+        padding-right: 8% !important;
+    }
 
     /********** Buttons **********/
-	.btn.btn-delete {
-		background-position-x: 50%;
-		background-size: 33%;
-	}
+    .btn.btn-delete {
+        background-position-x: 50%;
+        background-size: 33%;
+    }
 
-	.btn.btn-delete .desc {
-		display: none;
-	}
+    .btn.btn-delete .desc {
+        display: none;
+    }
 }
 
 @media screen and (min-width: 520px) {
@@ -1149,13 +1158,13 @@ form {
     }
 
     /********** Buttons **********/
-	.btn.btn-round {
-	    background-position-y: 40%;
-	}
+    .btn.btn-round {
+        background-position-y: 40%;
+    }
 
-	.btn.btn-lg {
-		height: 10em;
-    	width: 10em;
-    	padding-top: 4.5em;
-	}
+    .btn.btn-lg {
+        height: 10em;
+        width: 10em;
+        padding-top: 4.5em;
+    }
 }
